@@ -1,6 +1,13 @@
 // src/router/index.ts
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-import DashboardView from '@/views/DashboardView.vue'; // @-Alias verwenden
+import DashboardView from '@/views/DashboardView.vue';
+
+// Importiere die neuen Notiz-Komponenten
+// Stelle sicher, dass die Pfade zu deinen .vue Dateien korrekt sind.
+// Ich gehe davon aus, dass sie in einem Unterordner 'notes' innerhalb von 'views' liegen.
+import NoteListView from '@/views/notes/NoteListView.vue';
+import NoteView from '@/views/notes/NoteView.vue';
+import NoteEditView from '@/views/notes/NoteEditView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,22 +18,41 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/tasks',
     name: 'Tasks',
-    component: () => import('@/views/TasksView.vue'), // @-Alias verwenden
+    component: () => import('@/views/TasksView.vue'),
+  },
+  // ANPASSUNG UND ERWEITERUNG DER NOTIZ-ROUTEN
+  {
+    path: '/notes', // Hauptpfad für Notizen
+    name: 'NoteList', // Zeigt die Liste aller Notizen
+    component: NoteListView, // Unsere neue Listenansicht
   },
   {
-    path: '/notes',
-    name: 'Notes',
-    component: () => import('@/views/NotesView.vue'), // @-Alias verwenden
+    path: '/notes/new',
+    name: 'NoteCreate', // Zum Erstellen einer neuen Notiz
+    component: NoteEditView, // Verwendet die Editieransicht
   },
+  {
+    path: '/notes/:id', // ':id' ist ein dynamischer Parameter für die Notiz-ID
+    name: 'NoteView',   // Zeigt eine einzelne Notiz an
+    component: NoteView,
+    props: true, // Übergibt Routenparameter (z.B. :id) als Props an die Komponente
+  },
+  {
+    path: '/notes/:id/edit',
+    name: 'NoteEdit',   // Zum Bearbeiten einer bestehenden Notiz
+    component: NoteEditView,
+    props: true, // Übergibt Routenparameter (z.B. :id) als Props
+  },
+  // ENDE DER NOTIZ-ROUTEN ANPASSUNG
   {
     path: '/habits',
     name: 'Habits',
-    component: () => import('@/views/HabitsView.vue'), // @-Alias verwenden
+    component: () => import('@/views/HabitsView.vue'),
   },
   {
     path: '/events',
     name: 'DailyEvents',
-    component: () => import('@/views/DailyEventsView.vue'), // @-Alias verwenden
+    component: () => import('@/views/DailyEventsView.vue'),
   },
 ];
 
