@@ -20,6 +20,12 @@
     <footer>
       <p>&copy; {{ new Date().getFullYear() }} Meine Produktivitäts-App</p>
       <PwaReloadPrompt />
+
+      <div>
+        Über einen 
+        <a href="https://www.buymeacoffee.com/snuppedelua" target="_blank" rel="noopener noreferrer">Kaffee</a>
+        würde ich mich freuen!
+      </div>
     </footer>
   </div>
 </template>

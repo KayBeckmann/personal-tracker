@@ -1,19 +1,19 @@
 // src/components/tasks/CreateTaskForm.vue
 <template>
-  <div class="create-task-form">
-    <h3>Neuen Task erstellen</h3>
+  <div class="task-form">
+    <h3>{{ isEditMode ? 'Task bearbeiten' : 'Neuen Task erstellen' }}</h3>
     <form @submit.prevent="handleSubmit">
       <div>
         <label for="task-title">Titel:</label>
-        <input type="text" id="task-title" v-model="title" required />
+        <input type="text" id="task-title" v-model="editableTask.title" required />
       </div>
       <div>
         <label for="task-description">Beschreibung (optional):</label>
-        <textarea id="task-description" v-model="description"></textarea>
+        <textarea id="task-description" v-model="editableTask.description"></textarea>
       </div>
       <div>
         <label for="task-priority">Priorität:</label>
-        <select id="task-priority" v-model="priority">
+        <select id="task-priority" v-model="editableTask.priority">
           <option value="low">Niedrig</option>
           <option value="medium">Mittel</option>
           <option value="high">Hoch</option>
@@ -21,57 +21,124 @@
       </div>
       <div>
         <label for="task-dueDate">Fällig bis (optional):</label>
-        <input type="date" id="task-dueDate" v-model="dueDate" />
+        <input type="date" id="task-dueDate" v-model="editableTask.dueDate" />
       </div>
-      <button type="submit">Task hinzufügen</button>
+      <div class="form-actions">
+        <button type="submit">{{ isEditMode ? 'Task aktualisieren' : 'Task hinzufügen' }}</button>
+        <button type="button" @click="handleCancel" class="cancel-button">Abbrechen</button>
+      </div>
       <div v-if="formError" class="error-message">{{ formError }}</div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, computed, defineProps, defineEmits, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import type { Task } from '@/services/db';
 
+const props = defineProps<{
+  taskToEdit?: Task | null; // Optional prop for editing
+}>();
+
+const emit = defineEmits(['formSubmitted', 'cancelEdit']);
+
 const taskStore = useTaskStore();
 
-const title = ref('');
-const description = ref('');
-const priority = ref<'low' | 'medium' | 'high'>('medium');
-const dueDate = ref<string | null>(null); // Wird als String 'YYYY-MM-DD' vom Input geliefert
+// Use a local reactive object for form data
+const editableTask = ref<Partial<Task>>({
+  title: '',
+  description: '',
+  priority: 'medium',
+  dueDate: null,
+});
+
 const formError = ref<string | null>(null);
 
+const isEditMode = computed(() => !!props.taskToEdit);
+
+// Populate form when taskToEdit prop changes or on mount if in edit mode
+watch(
+  () => props.taskToEdit,
+  (newTask) => {
+    if (newTask && isEditMode.value) {
+      editableTask.value = { 
+        ...newTask,
+        // Ensure dueDate is a string in YYYY-MM-DD format for the input type="date"
+        // or null if not set. The input expects an empty string for no date,
+        // or a valid date string.
+        dueDate: newTask.dueDate || null 
+      };
+    } else {
+      // Reset for create mode
+      editableTask.value = {
+        title: '',
+        description: '',
+        priority: 'medium',
+        dueDate: null,
+      };
+    }
+  },
+  { immediate: true, deep: true } // immediate to run on mount, deep for object changes
+);
+
+
 const handleSubmit = async () => {
-  if (!title.value.trim()) {
+  if (!editableTask.value.title || !editableTask.value.title.trim()) {
     formError.value = 'Titel darf nicht leer sein.';
     return;
   }
   formError.value = null;
 
-  const newTask: Omit<Task, 'id' | 'createdAt' | 'completed'> = {
-    title: title.value,
-    description: description.value || undefined, // Setze undefined wenn leer, damit Dexie es nicht als leeren String speichert
-    priority: priority.value,
-    dueDate: dueDate.value || null, // Wichtig: null wenn kein Datum
-  };
-
   try {
-    await taskStore.addTask(newTask);
-    // Formular zurücksetzen
-    title.value = '';
-    description.value = '';
-    priority.value = 'medium';
-    dueDate.value = null;
+    if (isEditMode.value && props.taskToEdit?.id) {
+      const taskToUpdate: Task = {
+        ...props.taskToEdit, // Includes original id and createdAt
+        ...editableTask.value,
+        title: editableTask.value.title.trim(),
+        description: editableTask.value.description || undefined,
+        priority: editableTask.value.priority as 'low' | 'medium' | 'high', // Cast because editableTask is Partial
+        dueDate: editableTask.value.dueDate || null, // Ensure null if empty
+      };
+      await taskStore.updateTask(taskToUpdate);
+    } else {
+      const newTaskPayload: Omit<Task, 'id' | 'createdAt' | 'completed'> = {
+        title: editableTask.value.title.trim(),
+        description: editableTask.value.description || undefined,
+        priority: editableTask.value.priority as 'low' | 'medium' | 'high',
+        dueDate: editableTask.value.dueDate || null,
+      };
+      await taskStore.addTask(newTaskPayload);
+    }
+    emit('formSubmitted');
+    resetForm();
   } catch (error) {
-    console.error("Fehler beim Hinzufügen des Tasks:", error);
-    formError.value = 'Task konnte nicht hinzugefügt werden.';
+    console.error("Fehler beim Verarbeiten des Tasks:", error);
+    formError.value = `Task konnte nicht ${isEditMode.value ? 'aktualisiert' : 'hinzugefügt'} werden.`;
   }
 };
+
+const handleCancel = () => {
+  emit('cancelEdit');
+  resetForm();
+};
+
+const resetForm = () => {
+  if (!isEditMode.value) { // Only reset fully if in create mode
+    editableTask.value = {
+      title: '',
+      description: '',
+      priority: 'medium',
+      dueDate: null,
+    };
+  }
+  formError.value = null;
+};
+
 </script>
 
 <style scoped>
-.create-task-form {
+.task-form {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
@@ -79,40 +146,46 @@ const handleSubmit = async () => {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.create-task-form h3 {
+.task-form h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
 }
 
-.create-task-form div {
+.task-form div:not(.form-actions) { /* Style all direct div children except form-actions */
   margin-bottom: 10px;
 }
 
-.create-task-form label {
+.task-form label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
   color: #555;
 }
 
-.create-task-form input[type="text"],
-.create-task-form textarea,
-.create-task-form select,
-.create-task-form input[type="date"] {
+.task-form input[type="text"],
+.task-form textarea,
+.task-form select,
+.task-form input[type="date"] {
   width: 100%;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-sizing: border-box; /* Wichtig damit padding nicht die Breite erhöht */
+  box-sizing: border-box;
 }
 
-.create-task-form textarea {
+.task-form textarea {
   min-height: 80px;
   resize: vertical;
 }
 
-.create-task-form button[type="submit"] {
+.form-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px; /* Abstand zwischen den Buttons */
+}
+
+.task-form button[type="submit"] {
   background-color: #4DBA87; /* Vue Grün */
   color: white;
   padding: 10px 15px;
@@ -123,8 +196,22 @@ const handleSubmit = async () => {
   transition: background-color 0.3s ease;
 }
 
-.create-task-form button[type="submit"]:hover {
+.task-form button[type="submit"]:hover {
   background-color: #368a67;
+}
+
+.task-form .cancel-button {
+  background-color: #ccc;
+  color: #333;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+.task-form .cancel-button:hover {
+  background-color: #bbb;
 }
 
 .error-message {
