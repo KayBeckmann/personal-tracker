@@ -1,155 +1,171 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard-view">
     <h1>Dashboard</h1>
 
-    <div v-if="taskStore.isLoading">Lade Dashboard Daten...</div>
-    <div v-else-if="taskStore.error">{{ taskStore.error }}</div>
-    <div v-else class="dashboard-grid">
-      <div class="dashboard-widget">
-        <h2>Wichtige Tasks</h2>
-        <p>
-          Anzahl Tasks mit hoher Priorität (offen):
-          <strong>{{ taskStore.highPriorityTasksCount }}</strong>
-        </p>
-      </div>
-
-      <div class="dashboard-widget">
-        <h2>Nächster fälliger Task</h2>
-        <div v-if="taskStore.nextDueTask">
-          <p><strong>Titel:</strong> {{ taskStore.nextDueTask.title }}</p>
-          <p><strong>Fällig am:</strong> {{ formatDate(taskStore.nextDueTask.dueDate) }}</p>
-          <p><strong>Priorität:</strong> {{ taskStore.nextDueTask.priority }}</p>
+    <section class="dashboard-section">
+      <h2>Aufgabenübersicht</h2>
+      <div class="dashboard-metrics">
+        <div class="metric-item">
+          <span class="metric-value">{{ taskStore.highPriorityTasksCount }}</span>
+          <span class="metric-label">Offene Aufgaben mit hoher Priorität</span>
         </div>
-        <div v-else>
-          <p>Keine offenen Tasks mit Fälligkeitsdatum.</p>
+        <div class="metric-item" v-if="taskStore.nextDueTask">
+          <span class="metric-value">{{ taskStore.nextDueTask.title }}</span>
+          <span class="metric-label">Nächste fällige Aufgabe: {{ formatDate(taskStore.nextDueTask.dueDate) }}</span>
+        </div>
+        <div class="metric-item" v-else>
+          <span class="metric-label">Keine fälligen Aufgaben.</span>
         </div>
       </div>
+    </section>
 
-      <div class="dashboard-widget">
-        <h2>Heutige Habits</h2>
-        <div v-if="habitStore.isLoading">Lade Habits...</div>
-        <div v-else-if="todayHabits.length === 0">Keine Habits für heute.</div>
-        <ul v-else>
-          <li v-for="habit in todayHabits" :key="habit.id" :class="{ completed: isHabitCompletedToday(habit.id!) }">
-            {{ habit.name }} - {{ habit.streak }} Tage
-            <button @click="toggleHabitToday(habit.id!)">
-              {{ isHabitCompletedToday(habit.id!) ? 'Rückgängig' : 'Erledigt' }}
-            </button>
-          </li>
-        </ul>
+    <section class="dashboard-section">
+      <h2>Heutige Gewohnheiten</h2>
+      <div v-if="habitStore.isLoading" class="loading-message">Lade Gewohnheiten...</div>
+      <div v-if="habitStore.error" class="error-message">{{ habitStore.error }}</div>
+      <div v-if="!habitStore.isLoading && !habitStore.error">
+        <div v-if="todaysHabits.length === 0" class="empty-state">
+          Keine Gewohnheiten für heute oder alle bereits erledigt! Lege neue Gewohnheiten im Bereich "Habits" an.
+        </div>
+        <HabitListItem
+          v-for="habit in todaysHabits"
+          :key="habit.id"
+          :habit="habit"
+          @completion-toggled="refreshHabitDisplay"
+        />
       </div>
+    </section>
+
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useHabitStore } from '@/stores/habitStore';
-import { computed, onMounted } from 'vue';
+import HabitListItem from '@/components/habits/HabitListItem.vue'; // Importieren
 import type { Habit } from '@/services/db';
+
+interface HabitForDisplay extends Habit {
+  completedToday: boolean;
+  isDue: boolean;
+}
 
 const taskStore = useTaskStore();
 const habitStore = useHabitStore();
 
-const formatDate = (dateString: string | null | undefined) => {
+onMounted(async () => {
+  // Stores sollten ihre Daten selbst beim Mounten laden,
+  // aber ein expliziter Fetch kann hier für Konsistenz sorgen,
+  // falls die Daten aus irgendeinem Grund nicht aktuell sind.
+  // Die Stores verwenden liveQuery, daher sollte dies meist nicht nötig sein.
+  if (taskStore.tasks.length === 0) {
+    taskStore.fetchTasks();
+  }
+  // habitStore.fetchAllData() wird in onMounted des Stores selbst aufgerufen
+});
+
+const todaysHabits = computed<HabitForDisplay[]>(() => {
+  return habitStore.habitsForTodayDashboard;
+});
+
+const formatDate = (dateString?: string) => {
   if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleDateString('de-DE', {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 };
 
-const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-}
-
-// Nur Habits anzeigen, die heute relevant sind (z.B. täglich oder spezifischer Wochentag)
-// Diese Logik muss ggf. verfeinert werden basierend auf habit.frequency
-const todayHabits = computed(() => {
-  const today = new Date();
-  const todayStr = getTodayDateString();
-  const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'short' }); // Mon, Tue, etc.
-
-  return habitStore.habits.filter(habit => {
-    if (habit.frequency === 'daily') return true;
-    if (habit.frequency === 'weekly') {
-        // Beispiel: Wenn wöchentlich, könnte man annehmen, dass es jeden Tag der Woche angezeigt wird,
-        // oder man müsste einen "Starttag der Woche" im Habit speichern.
-        // Hier vereinfacht: Zeige es an, wenn heute der Tag ist, an dem es zuletzt erledigt wurde
-        // oder wenn es noch nie erledigt wurde.
-        return true; // Muss verfeinert werden!
-    }
-    if (Array.isArray(habit.frequency) && habit.frequency.includes(dayOfWeek)) return true;
-    return false;
-  });
-});
-
-const isHabitCompletedToday = (habitId: number): boolean => {
-  return habitStore.isHabitCompletedOnDate(habitId, getTodayDateString());
+// Diese Funktion könnte nützlich sein, wenn man nach einer Aktion die Anzeige
+// manuell beeinflussen möchte, obwohl live queries das meiste abdecken sollten.
+const refreshHabitDisplay = () => {
+  // Die Reaktivität sollte dies automatisch handhaben.
+  // Ggf. habitStore.fetchAllData() wenn man einen harten Refresh erzwingen will,
+  // aber das ist normalerweise nicht nötig mit Live Queries.
+  console.log("Habit completion toggled, dashboard display should update.");
 };
 
-const toggleHabitToday = async (habitId: number) => {
-  const today = getTodayDateString();
-  const completed = !isHabitCompletedToday(habitId);
-  await habitStore.logHabitDate(habitId, today, completed);
-  // Streak wird im Store aktualisiert
-};
-
-// Sicherstellen, dass die Stores geladen sind
-onMounted(() => {
-  if (taskStore.tasks.length === 0 && !taskStore.isLoading) {
-    taskStore.fetchTasks();
-  }
-  if (habitStore.habits.length === 0 && !habitStore.isLoading) {
-    habitStore.fetchAllData();
-  }
-});
 </script>
 
 <style scoped>
-.dashboard {
+.dashboard-view {
   padding: 20px;
+  text-align: left;
 }
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+
+.dashboard-view h1 {
+  color: var(--color-heading);
+  margin-bottom: 30px;
+  text-align: center;
 }
-.dashboard-widget {
-  background-color: #f9f9f9;
-  border: 1px solid #eee;
+.dashboard-view h2 {
+  color: var(--color-heading);
+  border-bottom: 2px solid var(--color-primary-light);
+  padding-bottom: 8px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+.dashboard-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: var(--color-background);
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.metric-item {
+  background-color: var(--color-background-soft);
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  border: 1px solid var(--color-border-soft);
 }
-.dashboard-widget h2 {
-  margin-top: 0;
-  color: #333;
+
+.metric-value {
+  display: block;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 5px;
 }
-.dashboard-widget p {
-    color: #555;
+
+.metric-label {
+  font-size: 0.95em;
+  color: var(--color-text-soft);
 }
-.dashboard-widget strong {
-    color: #000;
+
+.loading-message, .error-message, .empty-state {
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+  text-align: center;
 }
-.completed {
-  text-decoration: line-through;
-  color: grey;
+
+.loading-message {
+  background-color: var(--color-info-background);
+  color: var(--color-info-text);
+  border: 1px solid var(--color-info-border);
 }
-ul {
-  list-style: none;
-  padding: 0;
+
+.error-message {
+  background-color: var(--color-warning-background);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning-border);
 }
-li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-}
-li:last-child {
-  border-bottom: none;
+.empty-state {
+  color: var(--color-text-light);
+  background-color: var(--color-background-mute);
+  padding: 20px;
+  border-radius: 6px;
 }
 </style>

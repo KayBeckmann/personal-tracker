@@ -10,83 +10,70 @@ function getTodayDateString(): string {
 
 export const useHabitStore = defineStore('habits', () => {
   const habits = ref<Habit[]>([]);
-  const habitEntries = ref<HabitEntry[]>([]); // Alle Einträge laden für Flexibilität
+  const habitEntries = ref<HabitEntry[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
   let liveHabitsQuerySubscription: ZenObservable.Subscription | null = null;
   let liveHabitEntriesQuerySubscription: ZenObservable.Subscription | null = null;
 
-  const fetchHabits = () => {
-    isLoading.value = true;
-    error.value = null;
-    if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
-
-    const observable = liveQuery(() => db.habits.orderBy('createdAt').toArray());
-    liveHabitsQuerySubscription = observable.subscribe({
-      next: (result) => {
-        habits.value = result;
-        // isLoading.value = false; // Wird durch fetchAllData gesteuert
-      },
-      error: (err) => {
-        console.error('Dexie liveQuery error (habits):', err);
-        error.value = 'Failed to load habits.';
-        isLoading.value = false;
-      },
-    });
-  };
-
-  const fetchHabitEntries = () => {
-    // isLoading.value = true; // Wird durch fetchAllData gesteuert
-    error.value = null;
-    if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
-
-    const observable = liveQuery(() => db.habitEntries.orderBy('date').toArray());
-    liveHabitEntriesQuerySubscription = observable.subscribe({
-      next: (result) => {
-        habitEntries.value = result;
-        // isLoading.value = false; // Wird durch fetchAllData gesteuert
-      },
-      error: (err) => {
-        console.error('Dexie liveQuery error (habitEntries):', err);
-        error.value = 'Failed to load habit entries.';
-        isLoading.value = false;
-      },
-    });
-  };
-
   const fetchAllData = () => {
     isLoading.value = true;
+    error.value = null; // Reset error on new fetch
     Promise.all([
-        new Promise<void>(resolve => {
-            if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
-            const obs = liveQuery(() => db.habits.orderBy('createdAt').toArray());
-            liveHabitsQuerySubscription = obs.subscribe({
-                next: res => { habits.value = res; resolve(); },
-                error: err => { console.error(err); error.value = "Failed to load habits"; resolve(); }
-            });
-        }),
-        new Promise<void>(resolve => {
-            if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
-            const obs = liveQuery(() => db.habitEntries.orderBy('date').toArray());
-            liveHabitEntriesQuerySubscription = obs.subscribe({
-                next: res => { habitEntries.value = res; resolve(); },
-                error: err => { console.error(err); error.value = "Failed to load habit entries"; resolve(); }
-            });
-        })
-    ]).finally(() => {
-        isLoading.value = false;
+      new Promise<void>((resolve, reject) => { // Added reject
+        if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
+        const obs = liveQuery(() => db.habits.orderBy('createdAt').toArray());
+        liveHabitsQuerySubscription = obs.subscribe({
+          next: res => { habits.value = res; resolve(); },
+          error: err => {
+            console.error('Dexie liveQuery error (habits):', err);
+            error.value = "Failed to load habits";
+            reject(err); // Propagate error
+          }
+        });
+      }),
+      new Promise<void>((resolve, reject) => { // Added reject
+        if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
+        const obs = liveQuery(() => db.habitEntries.orderBy('date').toArray());
+        liveHabitEntriesQuerySubscription = obs.subscribe({
+          next: res => { habitEntries.value = res; resolve(); },
+          error: err => {
+            console.error('Dexie liveQuery error (habitEntries):', err);
+            error.value = "Failed to load habit entries";
+            reject(err); // Propagate error
+          }
+        });
+      })
+    ]).then(() => {
+      // Refresh streaks for all habits after data is fetched
+      habits.value.forEach(habit => {
+        if (habit.id !== undefined) {
+          updateHabitStreak(habit.id);
+        }
+      });
+    }).catch(err => {
+        // isLoading is set to false in finally, but we can log aggregated error
+        console.error("Error fetching all habit data:", err);
+        if (!error.value) { // Set a general error if specific one wasn't set
+            error.value = "Failed to load all habit data.";
+        }
+    }).finally(() => {
+      isLoading.value = false;
     });
   };
 
 
-  const addHabit = async (habit: Omit<Habit, 'id' | 'createdAt' | 'streak' | 'lastCompleted'>) => {
+  const addHabit = async (habitData: Omit<Habit, 'id' | 'createdAt' | 'streak' | 'lastCompleted' | 'description'> & { description?: string }) => {
     try {
       await db.habits.add({
-        ...habit,
+        name: habitData.name,
+        frequency: habitData.frequency,
+        description: habitData.description || '', // Ensure description is always a string
         streak: 0,
         createdAt: new Date(),
       });
+      error.value = null;
     } catch (e) {
       console.error('Failed to add habit:', e);
       error.value = 'Failed to add habit.';
@@ -94,9 +81,13 @@ export const useHabitStore = defineStore('habits', () => {
   };
 
   const updateHabit = async (habit: Habit) => {
-    if (habit.id === undefined) return;
+    if (habit.id === undefined) {
+      error.value = 'Habit ID is undefined, cannot update.';
+      return;
+    }
     try {
       await db.habits.update(habit.id, habit);
+      error.value = null;
     } catch (e) {
       console.error('Failed to update habit:', e);
       error.value = 'Failed to update habit.';
@@ -109,6 +100,7 @@ export const useHabitStore = defineStore('habits', () => {
         await db.habits.delete(id);
         await db.habitEntries.where('habitId').equals(id).delete();
       });
+      error.value = null;
     } catch (e) {
       console.error('Failed to delete habit and its entries:', e);
       error.value = 'Failed to delete habit.';
@@ -124,6 +116,7 @@ export const useHabitStore = defineStore('habits', () => {
         await db.habitEntries.add({ habitId, date, completed });
       }
       await updateHabitStreak(habitId); // Streak aktualisieren
+      error.value = null;
     } catch (e) {
       console.error('Failed to log habit date:', e);
       error.value = 'Failed to log habit completion.';
@@ -139,57 +132,112 @@ export const useHabitStore = defineStore('habits', () => {
     if (!habit) return;
 
     const entriesForHabit = habitEntries.value
-        .filter(e => e.habitId === habitId && e.completed)
-        .sort((a, b) => b.date.localeCompare(a.date)); // Neueste zuerst
+      .filter(e => e.habitId === habitId && e.completed)
+      .sort((a, b) => b.date.localeCompare(a.date));
 
     let currentStreak = 0;
-    let lastCompletionDate: string | null = null;
+    let lastCompletionDateObj: Date | null = null; // Store as Date object
 
     if (entriesForHabit.length === 0) {
-        await updateHabit({ ...habit, streak: 0, lastCompleted: null });
-        return;
+      await updateHabit({ ...habit, streak: 0, lastCompleted: undefined }); // Use undefined for db
+      return;
     }
 
-    const todayStr = getTodayDateString();
-    let expectedDate = new Date(todayStr);
+    const today = new Date(getTodayDateString()); // Normalized today
+    let expectedDate = new Date(today); // Start expecting today or earlier
 
-    for (const entry of entriesForHabit) {
-        const entryDate = new Date(entry.date);
-        // Logik hängt stark von der "frequency" ab. Hier vereinfacht für 'daily'.
-        // Für 'weekly' oder spezifische Tage müsste die Logik erweitert werden,
-        // um zu prüfen, ob der Eintrag dem erwarteten Muster entspricht.
+    // Set initial lastCompletionDateObj from the most recent completed entry
+    if (entriesForHabit.length > 0) {
+        lastCompletionDateObj = new Date(entriesForHabit[0].date);
+    }
 
-        if (habit.frequency === 'daily') {
-            if (entry.date === expectedDate.toISOString().split('T')[0]) {
-                currentStreak++;
-                if (!lastCompletionDate) lastCompletionDate = entry.date;
-                expectedDate.setDate(expectedDate.getDate() - 1); // Erwarte den vorherigen Tag
-            } else if (entry.date < expectedDate.toISOString().split('T')[0]) {
-                // Lücke im Streak gefunden, wenn der Eintrag älter ist als der erwartete Tag
-                break;
-            }
-        } else {
-            // TODO: Implementiere komplexere Streak-Logik für andere Frequenzen
-            // Fürs Erste: wenn der letzte Eintrag heute ist, Streak = 1, sonst 0
-            // Dies ist eine sehr grobe Vereinfachung
-            if (entry.date === todayStr) {
-                currentStreak = 1; // Minimaler Streak, wenn heute erledigt
-                lastCompletionDate = entry.date;
-            }
-            break; // Für nicht-tägliche Habits, diese einfache Logik erstmal beibehalten
+
+    if (habit.frequency === 'daily') {
+      // If the most recent completion is not today or yesterday (for daily habits), streak is 0 unless it's today.
+      const mostRecentEntryDate = new Date(entriesForHabit[0].date);
+      const diffDaysWithToday = (today.getTime() - mostRecentEntryDate.getTime()) / (1000 * 3600 * 24);
+
+      if (diffDaysWithToday > 1) {
+         currentStreak = 0;
+         // lastCompletionDateObj remains the actual last completed date
+      } else {
+        for (const entry of entriesForHabit) {
+          const entryDate = new Date(entry.date);
+          if (entryDate.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
+            currentStreak++;
+            expectedDate.setDate(expectedDate.getDate() - 1);
+          } else if (entryDate < expectedDate) {
+            // Streak broken before this entry
+            break;
+          }
         }
+      }
+    } else {
+      // Simplified for weekly/monthly:
+      // If completed today, streak increases by 1 (or starts at 1).
+      // This is a placeholder for more complex logic (e.g., weekly means "completed this calendar week")
+      // The current logic doesn't really build a "streak" in the traditional sense for non-daily.
+      // It more reflects "consecutive periods of completion".
+      // For now, if the latest entry is today, we consider it part of "a" streak.
+      if (entriesForHabit.length > 0 && entriesForHabit[0].date === getTodayDateString()) {
+         // A very simple approach: count how many recent entries match the frequency pattern.
+         // This is still not a true "streak" for weekly/monthly in a calendar sense.
+         // The original logic was: if completed today, streak = 1.
+         // We can improve this slightly by at least checking the last completion.
+         currentStreak = habit.streak; // Keep existing streak
+         if(isHabitCompletedOnDate(habitId, getTodayDateString())){
+            // If it wasn't completed yesterday (for daily) or this period (for others)
+            // and now it is, the logic to increment is tricky without better period definition.
+            // The original code for daily already handles incrementing,
+            // The "else" branch here is for non-daily.
+            // Let's assume for non-daily: if completed, it's at least 1.
+            // If previous lastCompleted was for the current period, increment. This is still complex.
+            // Sticking to a simpler interpretation: if you did it, your streak related to that completion.
+            currentStreak = entriesForHabit.length > 0 ? 1 : 0; // Reset/start for simplicity for non-daily for now
+            // A true weekly/monthly streak needs to check against calendar weeks/months.
+         }
+      } else if (entriesForHabit.length > 0) {
+        currentStreak = 0; // If not completed today, break non-daily streak by this simple rule
+      }
     }
-    await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDate });
+
+    await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDateObj || undefined });
   };
 
-
-  const getHabitById = async (id: number): Promise<Habit | undefined> => {
-    return habits.value.find(h => h.id === id); // Aus dem ref nehmen für Live-Updates
+  const getHabitById = (id: number): Habit | undefined => { // No async needed if just filtering ref
+    return habits.value.find(h => h.id === id);
   }
 
   const getEntriesForHabit = (habitId: number): HabitEntry[] => {
     return habitEntries.value.filter(entry => entry.habitId === habitId);
   }
+
+  // Computed property for habits to display on the dashboard
+  const habitsForTodayDashboard = computed(() => {
+    const todayStr = getTodayDateString();
+    return habits.value.map(habit => {
+      const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);
+      // For weekly/monthly, "due today" is loosely interpreted as "can be done today".
+      // A more precise system would involve specific due dates or day-of-week/month.
+      let isDue = false;
+      if (habit.frequency === 'daily') {
+        isDue = true;
+      } else if (habit.frequency === 'weekly') {
+        // Placeholder: consider weekly habits always "potentially due"
+        // Or, logic to check if it's the designated day of the week
+        isDue = true; // Simplification: show all weekly
+      } else if (habit.frequency === 'monthly') {
+        // Placeholder: consider monthly habits always "potentially due"
+        // Or, logic to check if it's the designated day/date of the month
+        isDue = true; // Simplification: show all monthly
+      }
+      return {
+        ...habit,
+        completedToday,
+        isDue // Indicates if it should be shown on a "today" list
+      };
+    }).filter(h => h.isDue); // Filter based on the isDue logic above
+  });
 
   onMounted(() => {
     fetchAllData();
@@ -202,7 +250,7 @@ export const useHabitStore = defineStore('habits', () => {
 
   return {
     habits,
-    habitEntries, // Falls direkter Zugriff benötigt wird
+    habitEntries,
     isLoading,
     error,
     addHabit,
@@ -210,9 +258,11 @@ export const useHabitStore = defineStore('habits', () => {
     deleteHabit,
     logHabitDate,
     isHabitCompletedOnDate,
-    updateHabitStreak, // manuell aufrufen nach Log-Änderungen
+    updateHabitStreak,
     getHabitById,
     getEntriesForHabit,
-    fetchAllData
+    fetchAllData,
+    habitsForTodayDashboard, // Expose the new getter
+    getTodayDateString // Expose for components if needed
   };
 });
