@@ -5,10 +5,10 @@
       <nav>
         <router-link to="/">Dashboard</router-link>
         <router-link to="/tasks">Tasks</router-link>
-        <router-link to="/notes">Notizen</router-link>
+        <router-link to="/notes">Notes</router-link>
         <router-link to="/habits">Habits</router-link>
-        <router-link to="/events">Tagesereignisse</router-link>
-      </nav>
+        <router-link to="/events">Daily Events</router-link>
+        <router-link to="/budget">Budget</router-link> </nav>
     </header>
     <main>
       <router-view v-slot="{ Component }">

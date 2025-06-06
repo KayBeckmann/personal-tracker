@@ -54,6 +54,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'DailyEvents',
     component: () => import('@/views/DailyEventsView.vue'),
   },
+  // NEU: Route für das Haushaltsbuch
+  {
+    path: '/budget',
+    name: 'Budget',
+    component: () => import('@/views/BudgetView.vue'), // Die neue Hauptansicht für das Haushaltsbuch
+  },
 ];
 
 const router = createRouter({
