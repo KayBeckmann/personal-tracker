@@ -73,6 +73,9 @@ const pwaOptions: Partial<VitePWAOptions> = {
   },
   workbox: {
     globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
+    // KORREKTUR: Diese Zeile sorgt dafür, dass alle Navigationsanfragen,
+    // die auf keinen anderen Cache treffen, auf die index.html zurückfallen.
+    navigateFallback: 'index.html',
     // Runtime Caching für API-Anfragen (falls du welche hast)
     // runtimeCaching: [
     //   {

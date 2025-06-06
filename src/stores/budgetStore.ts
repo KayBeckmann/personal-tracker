@@ -1,7 +1,7 @@
 // src/stores/budgetStore.ts
 import { defineStore } from 'pinia';
-import { db, type Account, type Category, type Transaction } from '@/services/db';
 import { liveQuery } from 'dexie';
+import { db, type Account, type Category, type Transaction } from '@/services/db';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 export const useBudgetStore = defineStore('budget', () => {
@@ -76,37 +76,54 @@ export const useBudgetStore = defineStore('budget', () => {
   };
 
   const addTransaction = async (data: Omit<Transaction, 'id' | 'createdAt'>) => {
+    error.value = null;
     return db.transaction('rw', db.transactions, db.accounts, async () => {
-      // 1. Betrag normalisieren (Ausgaben sind negativ)
       const amount = data.type === 'expense' ? -Math.abs(data.amount) : Math.abs(data.amount);
 
-      // 2. Transaktion erstellen
-      const transactionId = await db.transactions.add({
+      // Zuerst die neue Transaktion speichern
+      await db.transactions.add({
         ...data,
         amount,
         createdAt: new Date()
       });
 
-      // 3. Kontostände aktualisieren
+      // FINALE KORREKTUR: Die Update-Logik wurde auf die grundlegende und sicherste "Lesen-Modifizieren-Schreiben"-Methode umgestellt.
       if (data.type === 'transfer') {
-        if (!data.toAccountId) throw new Error("Transfer requires a destination account.");
-        // Geld vom Quellkonto abbuchen
-        await db.accounts.update(data.accountId, { balance: db.dexie.cloned(prev => prev.balance - Math.abs(amount)) });
-        // Geld auf Zielkonto gutschreiben
-        await db.accounts.update(data.toAccountId, { balance: db.dexie.cloned(prev => prev.balance + Math.abs(amount)) });
-      } else {
-        // Bei Einnahme/Ausgabe Betrag auf Quellkonto anwenden
-        await db.accounts.update(data.accountId, { balance: db.dexie.cloned(prev => prev.balance + amount) });
+        if (!data.toAccountId) throw new Error("Zielkonto für die Umbuchung fehlt.");
+        
+        // 1. Lese die betroffenen Konten
+        const fromAccount = await db.accounts.get(data.accountId);
+        const toAccount = await db.accounts.get(data.toAccountId);
+
+        if (!fromAccount || !toAccount) throw new Error("Eines der Konten für die Umbuchung wurde nicht gefunden.");
+
+        // 2. Berechne die neuen Kontostände
+        const newFromBalance = fromAccount.balance - Math.abs(amount);
+        const newToBalance = toAccount.balance + Math.abs(amount);
+
+        // 3. Schreibe die Updates
+        await db.accounts.update(data.accountId, { balance: newFromBalance });
+        await db.accounts.update(data.toAccountId, { balance: newToBalance });
+
+      } else { // Für Einnahmen und Ausgaben
+        // 1. Lese das betroffene Konto
+        const account = await db.accounts.get(data.accountId);
+        if (!account) throw new Error("Konto wurde nicht gefunden.");
+
+        // 2. Berechne den neuen Kontostand
+        const newBalance = account.balance + amount;
+
+        // 3. Schreibe das Update
+        await db.accounts.update(data.accountId, { balance: newBalance });
       }
-      return transactionId;
     }).catch(e => {
-       console.error(e);
-       error.value = `Failed to add transaction: ${e}`;
+       console.error("Fehler in der Datenbanktransaktion:", e);
+       error.value = `Transaktion konnte nicht hinzugefügt werden: ${e.message}`;
+       throw e;
     });
   };
   
-  // --- Computed Properties (Getters) für Analysen & Diagramme ---
-
+  // --- Computed Properties (Getters) ---
   const last3FullMonthsAverage = computed(() => {
     const today = new Date();
     const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
@@ -119,7 +136,7 @@ export const useBudgetStore = defineStore('budget', () => {
         .map(a => a.id!);
         
     const relevantTransactions = transactions.value.filter(t => 
-        t.date >= startOfPeriod && t.date <= endOfLastMonth &&
+        new Date(t.date) >= startOfPeriod && new Date(t.date) <= endOfLastMonth &&
         accountIdsToInclude.includes(t.accountId) &&
         t.type !== 'transfer'
     );
@@ -134,7 +151,7 @@ export const useBudgetStore = defineStore('budget', () => {
         
     return {
         avgIncomePerMonth: totalIncome / 3,
-        avgExpensePerMonth: totalExpense / 3, // bleibt negativ
+        avgExpensePerMonth: totalExpense / 3,
         periodStart: startOfPeriod,
         periodEnd: endOfLastMonth
     };
@@ -173,6 +190,10 @@ export const useBudgetStore = defineStore('budget', () => {
         
       const totalExpense = sortedData.reduce((sum, item) => sum + item.total, 0);
       
+      if (totalExpense === 0) {
+        return { labels: [], datasets: [{ label: 'Amount', data: [] }, { label: 'Cumulative %', data: [] }] };
+      }
+
       let cumulativePercentage = 0;
       const paretoData = sortedData.map(item => {
         const percentage = (item.total / totalExpense) * 100;
@@ -191,46 +212,52 @@ export const useBudgetStore = defineStore('budget', () => {
 
   const financialHistoryAndForecastData = computed(() => {
     const today = new Date();
+    today.setHours(0,0,0,0);
     const labels: string[] = [];
     const historyData: (number|null)[] = [];
     
     const balancesByDate = new Map<string, number>();
     const totalCurrentBalance = accounts.value.reduce((sum, acc) => sum + acc.balance, 0);
     
-    // Annahme: der aktuelle Saldo ist der Saldo am Ende von "heute"
     balancesByDate.set(today.toISOString().split('T')[0], totalCurrentBalance);
 
     let runningBalance = totalCurrentBalance;
-    const sortedTransactions = [...transactions.value].sort((a, b) => b.date.getTime() - a.date.getTime());
+    const sortedTransactions = [...transactions.value].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     for (const t of sortedTransactions) {
-      const dateStr = t.date.toISOString().split('T')[0];
-      if (new Date(dateStr) < today) {
+      const transactionDate = new Date(t.date);
+      transactionDate.setHours(0,0,0,0);
+      
+      if (transactionDate.getTime() < today.getTime()) {
+        const dateStr = transactionDate.toISOString().split('T')[0];
+        // Nur den ersten (also letzten) Saldo des Tages speichern
         if (!balancesByDate.has(dateStr)) {
            balancesByDate.set(dateStr, runningBalance);
         }
+        // Der Kontostand *vor* dieser Transaktion
         runningBalance -= t.amount;
       }
     }
     
-    // Verlauf der letzten 30 Tage
     for (let i = 29; i >= 0; i--) {
         const date = new Date();
         date.setDate(today.getDate() - i);
+        date.setHours(0,0,0,0);
         const dateStr = date.toISOString().split('T')[0];
         labels.push(date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }));
         historyData.push(balancesByDate.get(dateStr) || null);
     }
 
-    // Fülle Lücken im Verlauf
+    // Fülle Lücken im Verlauf von vorne nach hinten
     for (let i = 1; i < historyData.length; i++) {
         if (historyData[i] === null) {
             historyData[i] = historyData[i - 1];
         }
     }
 
-    // Prognose bis Monatsende
-    const forecastData = [...historyData]; // Kopiert die Verlaufsdaten
+    const forecastData: (number | null)[] = new Array(historyData.length -1).fill(null);
+    forecastData.push(historyData[historyData.length-1]);
+    
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     let lastBalance = forecastData[forecastData.length - 1] || totalCurrentBalance;
     const dailyChange = (last3FullMonthsAverage.value.avgIncomePerMonth + last3FullMonthsAverage.value.avgExpensePerMonth) / 30.44;
@@ -256,7 +283,6 @@ export const useBudgetStore = defineStore('budget', () => {
     addCategory,
     addTransaction,
     fetchAll,
-    // Getter
     last3FullMonthsAverage,
     endOfMonthForecast,
     paretoChartData,
