@@ -17,7 +17,7 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
     if (liveEventsQuerySubscription) {
         liveEventsQuerySubscription.unsubscribe();
     }
-    // Sortiere nach Startzeit, neueste zuerst oder älteste zuerst, je nach Bedarf
+    // Sortiere nach Startzeit, neueste zuerst
     const observable = liveQuery(() => db.dailyEvents.orderBy('startTime').reverse().toArray());
     liveEventsQuerySubscription = observable.subscribe({
       next: (result) => {
@@ -38,6 +38,7 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
         ...event,
         createdAt: new Date(),
       });
+      error.value = null;
     } catch (e) {
       console.error('Failed to add event:', e);
       error.value = 'Failed to add event.';
@@ -51,6 +52,7 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
     }
     try {
       await db.dailyEvents.update(event.id, event);
+      error.value = null;
     } catch (e) {
       console.error('Failed to update event:', e);
       error.value = 'Failed to update event.';
@@ -60,14 +62,27 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
   const deleteEvent = async (id: number) => {
     try {
       await db.dailyEvents.delete(id);
+      error.value = null;
     } catch (e) {
       console.error('Failed to delete event:', e);
       error.value = 'Failed to delete event.';
     }
   };
 
-  const getEventsForDate = (date: string): DailyEvent[] => { // date im Format YYYY-MM-DD
-    return events.value.filter(event => event.startTime.startsWith(date));
+  // KORRIGIERTE FUNKTION: Filtert Events für ein spezifisches Datum.
+  // Akzeptiert einen String im Format 'YYYY-MM-DD'.
+  const getEventsForDate = (date: string): DailyEvent[] => {
+    return events.value.filter(event => {
+      // Stellt sicher, dass event.startTime ein gültiges Date-Objekt ist.
+      if (event.startTime instanceof Date && !isNaN(event.startTime.getTime())) {
+        return event.startTime.toISOString().split('T')[0] === date;
+      }
+      // Fallback für den Fall, dass Daten inkonsistent als String gespeichert wurden.
+      if (typeof event.startTime === 'string') {
+        return event.startTime.startsWith(date);
+      }
+      return false;
+    }).sort((a, b) => a.startTime.getTime() - b.startTime.getTime()); // Sortiert die Events des Tages nach Uhrzeit
   };
 
   onMounted(() => {
