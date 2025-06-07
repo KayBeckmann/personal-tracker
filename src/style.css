@@ -1,174 +1,227 @@
 /* src/style.css */
+
+/* GRUNDLAGEN & FARBPALETTE */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* Farbpalette (Beispiele, passe sie an dein Design an) */
+  /* Helles Farbschema */
   --color-primary: #007bff;
   --color-primary-dark: #0056b3;
-  --color-primary-darker: #004085;
-  --color-primary-light: #cfe2ff;
-  /* Für Tag-Hintergründe etc. */
-
   --color-secondary: #6c757d;
-  --color-secondary-dark: #5a6268;
-  --color-secondary-darker: #545b62;
-
   --color-danger: #dc3545;
-  --color-danger-dark: #c82333;
-  --color-danger-darker: #bd2130;
-
   --color-success: #198754;
   --color-warning: #ffc107;
   --color-info: #0dcaf0;
 
-  --color-text: #212529;
-  --color-text-soft: #495057;
-  --color-text-light: #6c757d;
-  /* für text-muted */
-  --color-heading: #343a40;
+  --color-text: #c9d1d9;
+  --color-text-soft: #8b949e;
+  --color-heading: #f0f6fc;
 
-  --color-background: #ffffff;
-  --color-background-soft: #f8f9fa;
-  --color-background-mute: #e9ecef;
-  --color-background-hover: #dee2e6;
-  /* Für Hover-Effekte */
-
+  --color-background: #1c2128;
+  --color-background-soft: #22272e;
+  --color-background-mute: #2d333b;
 
   --color-border: #dee2e6;
-  --color-border-soft: #eeeeee;
-  --color-border-hover: #ced4da;
 
+  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
 
-  --color-info-background: #e0f7fa;
-  --color-info-text: #00796b;
-  --color-info-border: #b2ebf2;
-
-  --color-warning-background: #fff3cd;
-  --color-warning-text: #664d03;
-  --color-warning-border: #ffecb5;
-
-  --color-code-background: #282c34;
-  --color-code-text: #abb2bf;
-  --color-inline-code-background: #e9ecef;
-  --color-inline-code-text: #c7254e;
-  /* Rötlich, ähnlich Bootstrap */
-
-  /* Abstände, Schriftarten etc. können hier auch definiert werden */
-  --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --border-radius: 0.5rem;
+  /* 8px */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* Dunkles Farbschema */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #58a6ff;
+    --color-primary-dark: #79c0ff;
+    --color-secondary: #8b949e;
+    --color-danger: #f85149;
+    --color-success: #3fb950;
+    --color-warning: #d29922;
+    --color-info: #58a6ff;
+
+    --color-text: #c9d1d9;
+    --color-text-soft: #8b949e;
+    --color-heading: #f0f6fc;
+
+    --color-background: #1c2128;
+    --color-background-soft: #22272e;
+    --color-background-mute: #2d333b;
+
+    --color-border: #444c56;
+  }
 }
 
-a:hover {
-  color: #535bf2;
+/* ALLGEMEINE STILE */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
   font-family: var(--font-family-sans-serif);
   color: var(--color-text);
-  background-color: var(--color-background-soft);
-  /* Oder eine andere globale Hintergrundfarbe */
+  background-color: var(--color-background);
   line-height: 1.6;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.card {
-  padding: 2em;
-}
-
 #app {
-  /* Standard-Maximale Breite, gut für Tablets und kleinere Desktops */
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  /* Zentriert den App-Container */
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
-  /* Stellt sicher, dass der Container die Breite innerhalb von max-width nutzen kann */
+}
+
+/* TYPOGRAPHIE */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-heading);
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--color-primary-dark);
+}
+
+/* KARTEN-STIL */
+.card {
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--box-shadow);
+  text-align: left;
+}
+
+.card-header {
+  margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+/* FORMULAR-STILE */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--border-radius) - 2px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 16px 12px;
+}
+
+/* BUTTON-STILE */
+.btn {
+  display: inline-block;
+  font-weight: 500;
   text-align: center;
-  /* Zentriert direkten Text-Inhalt oder Inline-Block-Elemente in #app.
-                         Überlegen Sie, ob Kindkomponenten ihre Ausrichtung expliziter handhaben sollten. */
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  border-radius: calc(var(--border-radius) - 2px);
+  transition: all 0.2s;
 }
 
-/* Für größere Desktop-Bildschirme, erlauben Sie der App, mehr Breite zu nutzen */
-@media (min-width: 1400px) {
+.btn-primary {
+  color: #fff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
 
-  /* Passen Sie diesen Breakpoint bei Bedarf an. Die ursprüngliche max-width war 1280px. */
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  color: var(--color-text);
+  background-color: var(--color-background-mute);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: #d3d9df;
+}
+
+.btn-danger {
+  color: #fff;
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.25rem;
+}
+
+/* Responsive Anpassung für den App-Container */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 70px;
+    /* Platz für die mobile Navigationsleiste */
+  }
+
   #app {
-    max-width: 1600px;
-    /* Beispiel: erhöhte maximale Breite */
-  }
-}
-
-@media (min-width: 1800px) {
-
-  /* Für noch größere Bildschirme */
-  #app {
-    max-width: 1900px;
-    /* Weiter erhöht, oder verwenden Sie einen Prozentsatz der Viewport-Breite */
-    /* Beispiel für prozentuale Breite: max-width: 90%; */
-    /* Wenn Sie eine prozentuale Breite verwenden, können Sie optional immer noch eine absolute Obergrenze festlegen: */
-    /* max-width: 2200px; */
-  }
-}
-
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
+    padding: 1rem;
   }
 }
