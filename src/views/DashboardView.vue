@@ -1,171 +1,204 @@
 <template>
-  <div class="dashboard-view">
+  <div class="dashboard">
     <h1>Dashboard</h1>
 
-    <section class="dashboard-section">
-      <h2>Aufgabenübersicht</h2>
-      <div class="dashboard-metrics">
-        <div class="metric-item">
-          <span class="metric-value">{{ taskStore.highPriorityTasksCount }}</span>
-          <span class="metric-label">Offene Aufgaben mit hoher Priorität</span>
-        </div>
-        <div class="metric-item" v-if="taskStore.nextDueTask">
-          <span class="metric-value">{{ taskStore.nextDueTask.title }}</span>
-          <span class="metric-label">Nächste fällige Aufgabe: {{ formatDate(taskStore.nextDueTask.dueDate) }}</span>
-        </div>
-        <div class="metric-item" v-else>
-          <span class="metric-label">Keine fälligen Aufgaben.</span>
-        </div>
+    <h2>At a Glance</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>High Priority Tasks</h3>
+        <p class="stat-number">{{ taskStore.highPriorityTasksCount }}</p>
       </div>
-    </section>
-
-    <section class="dashboard-section">
-      <h2>Heutige Gewohnheiten</h2>
-      <div v-if="habitStore.isLoading" class="loading-message">Lade Gewohnheiten...</div>
-      <div v-if="habitStore.error" class="error-message">{{ habitStore.error }}</div>
-      <div v-if="!habitStore.isLoading && !habitStore.error">
-        <div v-if="todaysHabits.length === 0" class="empty-state">
-          Keine Gewohnheiten für heute oder alle bereits erledigt! Lege neue Gewohnheiten im Bereich "Habits" an.
-        </div>
-        <HabitListItem
-          v-for="habit in todaysHabits"
-          :key="habit.id"
-          :habit="habit"
-          @completion-toggled="refreshHabitDisplay"
-        />
+      <div class="stat-card">
+        <h3>Next Due Task</h3>
+        <p v-if="taskStore.nextDueTask" class="stat-detail">
+          {{ taskStore.nextDueTask.title }} on {{ formatDate(taskStore.nextDueTask.dueDate) }}
+        </p>
+        <p v-else>No upcoming tasks</p>
       </div>
-    </section>
 
+      <div class="stat-card">
+        <h3>Total Balance</h3>
+        <p class="stat-number">{{ formatCurrency(budgetStore.totalBalance) }}</p>
+      </div>
+       <div class="stat-card">
+        <h3>End of Month Forecast</h3>
+        <p class="stat-detail">
+            <span>Income: ~{{ formatCurrency(budgetStore.endOfMonthForecast.estimatedIncome) }}</span><br>
+            <span>Expense: ~{{ formatCurrency(budgetStore.endOfMonthForecast.estimatedExpense, true) }}</span>
+        </p>
+      </div>
     </div>
+
+    <h2>Today's Habits</h2>
+    <div class="habits-section">
+      <div v-if="habitStore.isLoading">Loading habits...</div>
+      <div v-else-if="habitStore.habitsForTodayDashboard.length > 0" class="habits-grid">
+        <div 
+          v-for="habit in habitStore.habitsForTodayDashboard" 
+          :key="habit.id" 
+          class="habit-card" 
+          :class="{ 'completed': habit.completedToday }">
+            <span class="habit-name">{{ habit.name }}</span>
+            <input 
+              type="checkbox"
+              :checked="habit.completedToday"
+              @change="toggleHabit(habit.id!)"
+              class="habit-checkbox"
+              :aria-label="`Mark ${habit.name} as ${habit.completedToday ? 'not done' : 'done'}`"
+            />
+        </div>
+      </div>
+      <p v-else>No habits scheduled for today.</p>
+    </div>
+
+    <div class="chart-container">
+        <h2>Expense Distribution</h2>
+        <ExpensePieChart v-if="!budgetStore.isLoading && budgetStore.expensePieChartData.datasets[0].data.length" :data="budgetStore.expensePieChartData" />
+        <p v-else-if="budgetStore.isLoading">Loading chart data...</p>
+        <p v-else>No expense data available for the chart.</p>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-import { computed, onMounted } from 'vue';
+<script lang="ts" setup>
 import { useTaskStore } from '@/stores/taskStore';
+import { useBudgetStore } from '@/stores/budgetStore';
 import { useHabitStore } from '@/stores/habitStore';
-import HabitListItem from '@/components/habits/HabitListItem.vue'; // Importieren
-import type { Habit } from '@/services/db';
-
-interface HabitForDisplay extends Habit {
-  completedToday: boolean;
-  isDue: boolean;
-}
+import { onMounted } from 'vue';
+import ExpensePieChart from '@/components/ExpensePieChart.vue';
 
 const taskStore = useTaskStore();
+const budgetStore = useBudgetStore();
 const habitStore = useHabitStore();
 
-onMounted(async () => {
-  // Stores sollten ihre Daten selbst beim Mounten laden,
-  // aber ein expliziter Fetch kann hier für Konsistenz sorgen,
-  // falls die Daten aus irgendeinem Grund nicht aktuell sind.
-  // Die Stores verwenden liveQuery, daher sollte dies meist nicht nötig sein.
-  if (taskStore.tasks.length === 0) {
-    taskStore.fetchTasks();
-  }
-  // habitStore.fetchAllData() wird in onMounted des Stores selbst aufgerufen
+onMounted(() => {
+  taskStore.fetchTasks();
+  budgetStore.fetchAll();
+  habitStore.fetchAllData();
 });
 
-const todaysHabits = computed<HabitForDisplay[]>(() => {
-  return habitStore.habitsForTodayDashboard;
-});
+const toggleHabit = (habitId: number) => {
+  if (typeof habitId === 'number') {
+    habitStore.toggleHabitCompletionForToday(habitId);
+  }
+};
+
+const formatCurrency = (value: number, isExpense: boolean = false) => {
+  const absValue = isExpense ? Math.abs(value) : value;
+  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(absValue);
+};
 
 const formatDate = (dateString?: string) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('de-DE', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-// Diese Funktion könnte nützlich sein, wenn man nach einer Aktion die Anzeige
-// manuell beeinflussen möchte, obwohl live queries das meiste abdecken sollten.
-const refreshHabitDisplay = () => {
-  // Die Reaktivität sollte dies automatisch handhaben.
-  // Ggf. habitStore.fetchAllData() wenn man einen harten Refresh erzwingen will,
-  // aber das ist normalerweise nicht nötig mit Live Queries.
-  console.log("Habit completion toggled, dashboard display should update.");
-};
-
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('de-DE');
+}
 </script>
 
 <style scoped>
-.dashboard-view {
-  padding: 20px;
+.dashboard {
   text-align: left;
 }
-
-.dashboard-view h1 {
-  color: var(--color-heading);
-  margin-bottom: 30px;
-  text-align: center;
+h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
 }
-.dashboard-view h2 {
-  color: var(--color-heading);
-  border-bottom: 2px solid var(--color-primary-light);
-  padding-bottom: 8px;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-}
-
-.dashboard-section {
-  margin-bottom: 30px;
-  padding: 20px;
-  background-color: var(--color-background);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.dashboard-metrics {
+.stats-grid, .habits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 1.5rem;
 }
-
-.metric-item {
-  background-color: var(--color-background-soft);
-  padding: 15px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border-soft);
+.stat-card {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
 }
-
-.metric-value {
-  display: block;
-  font-size: 1.8em;
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+.stat-card h3 {
+  margin-top: 0;
+  color: var(--color-heading);
+}
+.stat-number {
+  font-size: 2.5rem;
   font-weight: bold;
   color: var(--color-primary);
-  margin-bottom: 5px;
+}
+.stat-detail {
+    font-size: 1rem;
+    color: var(--color-text-soft);
+    line-height: 1.5;
 }
 
-.metric-label {
-  font-size: 0.95em;
-  color: var(--color-text-soft);
+/* Corrected habit-card styles */
+.habit-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+.habit-card.completed {
+    background-color: var(--color-info-background);
+    border-color: var(--color-info-border);
+    color: var(--color-text-soft);
+}
+.habit-name {
+    font-weight: 500;
+    padding-right: 1rem;
+}
+.habit-checkbox {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    flex-shrink: 0;
+    
+    /* Better custom checkbox styling */
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--color-background-soft);
+    border: 2px solid var(--color-border-hover);
+    border-radius: 4px;
+    display: grid;
+    place-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.habit-checkbox:hover {
+    border-color: var(--color-primary);
+}
+.habit-checkbox::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--color-primary);
+    transform-origin: bottom left;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.habit-checkbox:checked {
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary);
+}
+.habit-checkbox:checked::before {
+    transform: scale(1);
 }
 
-.loading-message, .error-message, .empty-state {
-  padding: 15px;
-  margin-top: 10px;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.loading-message {
-  background-color: var(--color-info-background);
-  color: var(--color-info-text);
-  border: 1px solid var(--color-info-border);
-}
-
-.error-message {
-  background-color: var(--color-warning-background);
-  color: var(--color-warning-text);
-  border: 1px solid var(--color-warning-border);
-}
-.empty-state {
-  color: var(--color-text-light);
-  background-color: var(--color-background-mute);
-  padding: 20px;
-  border-radius: 6px;
+.chart-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  height: 450px;
 }
 </style>

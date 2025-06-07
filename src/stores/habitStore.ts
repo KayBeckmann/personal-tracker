@@ -122,6 +122,18 @@ export const useHabitStore = defineStore('habits', () => {
       error.value = 'Failed to log habit completion.';
     }
   };
+  
+  const toggleHabitCompletionForToday = async (habitId: number) => {
+    const todayStr = getTodayDateString();
+    const habit = habits.value.find(h => h.id === habitId);
+    if (!habit || habit.id === undefined) {
+        error.value = 'Habit not found.';
+        return;
+    }
+
+    const isCompleted = isHabitCompletedOnDate(habit.id, todayStr);
+    await logHabitDate(habit.id, todayStr, !isCompleted);
+  };
 
   const isHabitCompletedOnDate = (habitId: number, date: string): boolean => {
     return habitEntries.value.some(entry => entry.habitId === habitId && entry.date === date && entry.completed);
@@ -131,35 +143,34 @@ export const useHabitStore = defineStore('habits', () => {
     const habit = habits.value.find(h => h.id === habitId);
     if (!habit) return;
 
-    const entriesForHabit = habitEntries.value
-      .filter(e => e.habitId === habitId && e.completed)
-      .sort((a, b) => b.date.localeCompare(a.date));
+    // KORREKTUR: Lies die Einträge direkt aus der DB, um eine Race Condition 
+    // mit dem reaktiven 'habitEntries' Ref zu vermeiden.
+    const allEntriesForHabit = await db.habitEntries.where('habitId').equals(habitId).toArray();
+    const entriesForHabit = allEntriesForHabit
+        .filter(e => e.completed)
+        .sort((a, b) => b.date.localeCompare(a.date));
 
     let currentStreak = 0;
-    let lastCompletionDateObj: Date | null = null; // Store as Date object
+    let lastCompletionDateObj: Date | null = null;
 
     if (entriesForHabit.length === 0) {
-      await updateHabit({ ...habit, streak: 0, lastCompleted: undefined }); // Use undefined for db
+      await updateHabit({ ...habit, streak: 0, lastCompleted: undefined });
       return;
     }
 
-    const today = new Date(getTodayDateString()); // Normalized today
-    let expectedDate = new Date(today); // Start expecting today or earlier
+    const today = new Date(getTodayDateString());
+    let expectedDate = new Date(today);
 
-    // Set initial lastCompletionDateObj from the most recent completed entry
     if (entriesForHabit.length > 0) {
         lastCompletionDateObj = new Date(entriesForHabit[0].date);
     }
 
-
     if (habit.frequency === 'daily') {
-      // If the most recent completion is not today or yesterday (for daily habits), streak is 0 unless it's today.
       const mostRecentEntryDate = new Date(entriesForHabit[0].date);
       const diffDaysWithToday = (today.getTime() - mostRecentEntryDate.getTime()) / (1000 * 3600 * 24);
 
       if (diffDaysWithToday > 1) {
          currentStreak = 0;
-         // lastCompletionDateObj remains the actual last completed date
       } else {
         for (const entry of entriesForHabit) {
           const entryDate = new Date(entry.date);
@@ -167,44 +178,22 @@ export const useHabitStore = defineStore('habits', () => {
             currentStreak++;
             expectedDate.setDate(expectedDate.getDate() - 1);
           } else if (entryDate < expectedDate) {
-            // Streak broken before this entry
             break;
           }
         }
       }
     } else {
-      // Simplified for weekly/monthly:
-      // If completed today, streak increases by 1 (or starts at 1).
-      // This is a placeholder for more complex logic (e.g., weekly means "completed this calendar week")
-      // The current logic doesn't really build a "streak" in the traditional sense for non-daily.
-      // It more reflects "consecutive periods of completion".
-      // For now, if the latest entry is today, we consider it part of "a" streak.
       if (entriesForHabit.length > 0 && entriesForHabit[0].date === getTodayDateString()) {
-         // A very simple approach: count how many recent entries match the frequency pattern.
-         // This is still not a true "streak" for weekly/monthly in a calendar sense.
-         // The original logic was: if completed today, streak = 1.
-         // We can improve this slightly by at least checking the last completion.
-         currentStreak = habit.streak; // Keep existing streak
-         if(isHabitCompletedOnDate(habitId, getTodayDateString())){
-            // If it wasn't completed yesterday (for daily) or this period (for others)
-            // and now it is, the logic to increment is tricky without better period definition.
-            // The original code for daily already handles incrementing,
-            // The "else" branch here is for non-daily.
-            // Let's assume for non-daily: if completed, it's at least 1.
-            // If previous lastCompleted was for the current period, increment. This is still complex.
-            // Sticking to a simpler interpretation: if you did it, your streak related to that completion.
-            currentStreak = entriesForHabit.length > 0 ? 1 : 0; // Reset/start for simplicity for non-daily for now
-            // A true weekly/monthly streak needs to check against calendar weeks/months.
-         }
+         currentStreak = entriesForHabit.length > 0 ? 1 : 0;
       } else if (entriesForHabit.length > 0) {
-        currentStreak = 0; // If not completed today, break non-daily streak by this simple rule
+        currentStreak = 0;
       }
     }
 
     await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDateObj || undefined });
   };
 
-  const getHabitById = (id: number): Habit | undefined => { // No async needed if just filtering ref
+  const getHabitById = (id: number): Habit | undefined => {
     return habits.value.find(h => h.id === id);
   }
 
@@ -212,31 +201,24 @@ export const useHabitStore = defineStore('habits', () => {
     return habitEntries.value.filter(entry => entry.habitId === habitId);
   }
 
-  // Computed property for habits to display on the dashboard
   const habitsForTodayDashboard = computed(() => {
     const todayStr = getTodayDateString();
     return habits.value.map(habit => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);
-      // For weekly/monthly, "due today" is loosely interpreted as "can be done today".
-      // A more precise system would involve specific due dates or day-of-week/month.
       let isDue = false;
       if (habit.frequency === 'daily') {
         isDue = true;
       } else if (habit.frequency === 'weekly') {
-        // Placeholder: consider weekly habits always "potentially due"
-        // Or, logic to check if it's the designated day of the week
-        isDue = true; // Simplification: show all weekly
+        isDue = true; 
       } else if (habit.frequency === 'monthly') {
-        // Placeholder: consider monthly habits always "potentially due"
-        // Or, logic to check if it's the designated day/date of the month
-        isDue = true; // Simplification: show all monthly
+        isDue = true;
       }
       return {
         ...habit,
         completedToday,
-        isDue // Indicates if it should be shown on a "today" list
+        isDue
       };
-    }).filter(h => h.isDue); // Filter based on the isDue logic above
+    }).filter(h => h.isDue);
   });
 
   onMounted(() => {
@@ -257,12 +239,13 @@ export const useHabitStore = defineStore('habits', () => {
     updateHabit,
     deleteHabit,
     logHabitDate,
+    toggleHabitCompletionForToday,
     isHabitCompletedOnDate,
     updateHabitStreak,
     getHabitById,
     getEntriesForHabit,
     fetchAllData,
-    habitsForTodayDashboard, // Expose the new getter
-    getTodayDateString // Expose for components if needed
+    habitsForTodayDashboard,
+    getTodayDateString
   };
 });

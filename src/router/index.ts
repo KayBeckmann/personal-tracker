@@ -60,6 +60,13 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Budget',
     component: () => import('@/views/BudgetView.vue'), // Die neue Hauptansicht für das Haushaltsbuch
   },
+  // NEU: Route zum Bearbeiten einer Transaktion
+  {
+    path: '/budget/transaction/:id/edit',
+    name: 'TransactionEdit',
+    component: () => import('@/views/TransactionEditView.vue'),
+    props: true
+  },
 ];
 
 const router = createRouter({

@@ -80,40 +80,30 @@ export const useBudgetStore = defineStore('budget', () => {
     return db.transaction('rw', db.transactions, db.accounts, async () => {
       const amount = data.type === 'expense' ? -Math.abs(data.amount) : Math.abs(data.amount);
 
-      // Zuerst die neue Transaktion speichern
       await db.transactions.add({
         ...data,
         amount,
         createdAt: new Date()
       });
 
-      // FINALE KORREKTUR: Die Update-Logik wurde auf die grundlegende und sicherste "Lesen-Modifizieren-Schreiben"-Methode umgestellt.
       if (data.type === 'transfer') {
         if (!data.toAccountId) throw new Error("Zielkonto für die Umbuchung fehlt.");
         
-        // 1. Lese die betroffenen Konten
         const fromAccount = await db.accounts.get(data.accountId);
         const toAccount = await db.accounts.get(data.toAccountId);
-
         if (!fromAccount || !toAccount) throw new Error("Eines der Konten für die Umbuchung wurde nicht gefunden.");
 
-        // 2. Berechne die neuen Kontostände
         const newFromBalance = fromAccount.balance - Math.abs(amount);
         const newToBalance = toAccount.balance + Math.abs(amount);
 
-        // 3. Schreibe die Updates
         await db.accounts.update(data.accountId, { balance: newFromBalance });
         await db.accounts.update(data.toAccountId, { balance: newToBalance });
 
-      } else { // Für Einnahmen und Ausgaben
-        // 1. Lese das betroffene Konto
+      } else {
         const account = await db.accounts.get(data.accountId);
         if (!account) throw new Error("Konto wurde nicht gefunden.");
 
-        // 2. Berechne den neuen Kontostand
         const newBalance = account.balance + amount;
-
-        // 3. Schreibe das Update
         await db.accounts.update(data.accountId, { balance: newBalance });
       }
     }).catch(e => {
@@ -122,8 +112,102 @@ export const useBudgetStore = defineStore('budget', () => {
        throw e;
     });
   };
+
+  const updateTransaction = async (originalTxId: number, newData: Omit<Transaction, 'id' | 'createdAt'>) => {
+    error.value = null;
+    return db.transaction('rw', db.transactions, db.accounts, async () => {
+        // 1. Get the original transaction
+        const originalTx = await db.transactions.get(originalTxId);
+        if (!originalTx) throw new Error("Transaction to update not found.");
+
+        // 2. Revert the original transaction's effect on account balances
+        if (originalTx.type === 'transfer') {
+            if (!originalTx.toAccountId) throw new Error("Original transaction is a corrupt transfer.");
+            const fromAccount = await db.accounts.get(originalTx.accountId);
+            const toAccount = await db.accounts.get(originalTx.toAccountId);
+            if (!fromAccount || !toAccount) throw new Error("An account for the original transaction was not found.");
+
+            await db.accounts.update(fromAccount.id!, { balance: fromAccount.balance + Math.abs(originalTx.amount) });
+            await db.accounts.update(toAccount.id!, { balance: toAccount.balance - Math.abs(originalTx.amount) });
+        } else {
+            const account = await db.accounts.get(originalTx.accountId);
+            if (!account) throw new Error("Account for the original transaction not found.");
+            await db.accounts.update(account.id!, { balance: account.balance - originalTx.amount });
+        }
+
+        // 3. Apply the new transaction's effect on account balances
+        const newAmount = newData.type === 'expense' ? -Math.abs(newData.amount) : Math.abs(newData.amount);
+
+        if (newData.type === 'transfer') {
+            if (!newData.toAccountId) throw new Error("Target account for the updated transfer is missing.");
+            const fromAccount = await db.accounts.get(newData.accountId);
+            const toAccount = await db.accounts.get(newData.toAccountId);
+            if (!fromAccount || !toAccount) throw new Error("An account for the updated transaction was not found.");
+            
+            await db.accounts.update(fromAccount.id!, { balance: fromAccount.balance - Math.abs(newAmount) });
+            await db.accounts.update(toAccount.id!, { balance: toAccount.balance + Math.abs(newAmount) });
+        } else {
+            const account = await db.accounts.get(newData.accountId);
+            if (!account) throw new Error("Account for the updated transaction not found.");
+            await db.accounts.update(account.id!, { balance: account.balance + newAmount });
+        }
+
+        // 4. Finally, update the transaction record itself
+        await db.transactions.update(originalTxId, {
+            description: newData.description,
+            amount: newAmount,
+            date: newData.date,
+            type: newData.type,
+            accountId: newData.accountId,
+            toAccountId: newData.toAccountId,
+            categoryId: newData.categoryId,
+        });
+
+    }).catch(e => {
+        console.error("Error in updateTransaction DB transaction:", e);
+        error.value = `Transaction could not be updated: ${e.message}`;
+        throw e;
+    });
+  };
   
+  const deleteTransaction = async (transactionId: number) => {
+    error.value = null;
+    return db.transaction('rw', db.transactions, db.accounts, async () => {
+        const t = await db.transactions.get(transactionId);
+        if (!t) throw new Error("Transaction not found");
+
+        if (t.type === 'transfer') {
+            if (!t.toAccountId) throw new Error("Corrupt transfer found");
+            const fromAccount = await db.accounts.get(t.accountId);
+            const toAccount = await db.accounts.get(t.toAccountId);
+            if (!fromAccount || !toAccount) throw new Error("Account not found");
+            
+            const newFromBalance = fromAccount.balance + Math.abs(t.amount);
+            const newToBalance = toAccount.balance - Math.abs(t.amount);
+            await db.accounts.update(t.accountId, { balance: newFromBalance });
+            await db.accounts.update(t.toAccountId, { balance: newToBalance });
+        } else {
+            const account = await db.accounts.get(t.accountId);
+            if (!account) throw new Error("Account not found");
+            const newBalance = account.balance - t.amount;
+            await db.accounts.update(t.accountId, { balance: newBalance });
+        }
+
+        await db.transactions.delete(transactionId);
+
+    }).catch(e => {
+        console.error("Failed to delete transaction:", e);
+        error.value = `Could not delete transaction: ${e.message}`;
+        throw e;
+    });
+  };
+
   // --- Computed Properties (Getters) ---
+
+  const totalBalance = computed(() => {
+    return accounts.value.reduce((sum, account) => sum + account.balance, 0);
+  });
+  
   const last3FullMonthsAverage = computed(() => {
     const today = new Date();
     const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
@@ -162,7 +246,7 @@ export const useBudgetStore = defineStore('budget', () => {
       const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
       const remainingDays = lastDayOfMonth - today.getDate();
       
-      if (remainingDays <= 0) return { income: 0, expense: 0 };
+      if (remainingDays <= 0) return { estimatedIncome: 0, estimatedExpense: 0 };
 
       const dailyAvgIncome = last3FullMonthsAverage.value.avgIncomePerMonth / 30.44;
       const dailyAvgExpense = last3FullMonthsAverage.value.avgExpensePerMonth / 30.44;
@@ -210,6 +294,39 @@ export const useBudgetStore = defineStore('budget', () => {
       };
   });
 
+  const expensePieChartData = computed(() => {
+    const expenseByCategory = new Map<string, number>();
+
+    transactions.value
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+          const category = categories.value.find(c => c.id === t.categoryId);
+          const categoryName = category ? category.name : 'Uncategorized';
+          const currentTotal = expenseByCategory.get(categoryName) || 0;
+          expenseByCategory.set(categoryName, currentTotal + Math.abs(t.amount));
+      });
+
+    const sortedData = Array.from(expenseByCategory.entries())
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
+    
+    const chartColors = [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+        '#FFCD56', '#C9CBCF', '#F7464A', '#46BFBD', '#FDB45C'
+    ];
+
+    return {
+      labels: sortedData.map(item => item.name),
+      datasets: [
+          { 
+              label: 'Expenses by Category',
+              data: sortedData.map(item => item.total),
+              backgroundColor: sortedData.map((_, i) => chartColors[i % chartColors.length]),
+          }
+      ]
+    };
+  });
+
   const financialHistoryAndForecastData = computed(() => {
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -230,11 +347,9 @@ export const useBudgetStore = defineStore('budget', () => {
       
       if (transactionDate.getTime() < today.getTime()) {
         const dateStr = transactionDate.toISOString().split('T')[0];
-        // Nur den ersten (also letzten) Saldo des Tages speichern
         if (!balancesByDate.has(dateStr)) {
            balancesByDate.set(dateStr, runningBalance);
         }
-        // Der Kontostand *vor* dieser Transaktion
         runningBalance -= t.amount;
       }
     }
@@ -248,7 +363,6 @@ export const useBudgetStore = defineStore('budget', () => {
         historyData.push(balancesByDate.get(dateStr) || null);
     }
 
-    // Fülle Lücken im Verlauf von vorne nach hinten
     for (let i = 1; i < historyData.length; i++) {
         if (historyData[i] === null) {
             historyData[i] = historyData[i - 1];
@@ -282,10 +396,14 @@ export const useBudgetStore = defineStore('budget', () => {
     addAccount,
     addCategory,
     addTransaction,
+    updateTransaction,
+    deleteTransaction,
     fetchAll,
+    totalBalance,
     last3FullMonthsAverage,
     endOfMonthForecast,
     paretoChartData,
+    expensePieChartData,
     financialHistoryAndForecastData
   };
 });
