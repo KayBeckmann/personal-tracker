@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "chart.js": "^4.4.9",
     "dexie": "^4.0.11",
     "marked": "^15.0.12",
