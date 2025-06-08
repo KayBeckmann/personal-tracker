@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa'
-import path from 'path' // Importiere path
+import path from 'path'
 
 const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate', // oder 'prompt' für manuelle Updates durch den User

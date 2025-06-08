@@ -1,7 +1,7 @@
 // src/stores/noteStore.ts
 import { defineStore } from 'pinia';
 import { db, type Note } from '@/services/db'; // Note Interface kommt von db.ts
-import { liveQuery, type Observable as DxObservable } from 'dexie';
+import { liveQuery, type Subscription } from 'dexie';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 export const useNoteStore = defineStore('notes', () => {
@@ -12,7 +12,7 @@ export const useNoteStore = defineStore('notes', () => {
   const searchTerm = ref('');
   const selectedTags = ref<string[]>([]);
 
-  let liveNotesQuerySubscription: DxObservable.Subscription | null = null;
+  let liveNotesQuerySubscription: Subscription | null = null;
 
   const fetchNotes = () => {
     isLoading.value = true;
@@ -44,7 +44,7 @@ export const useNoteStore = defineStore('notes', () => {
       // Defensive Data Processing für Tags
       let processedTags: string[] = [];
       if (Array.isArray(noteData.tags)) {
-        processedTags = noteData.tags.map(tag => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim())).filter(tag => tag.length > 0);
+        processedTags = noteData.tags.map((tag: any) => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim())).filter(tag => tag.length > 0);
       } else if (noteData.tags !== undefined && noteData.tags !== null) {
         console.warn(`addNote: noteData.tags was expected to be an array, but received type ${typeof noteData.tags}. Value:`, noteData.tags);
         const tagAsString = String(noteData.tags).trim();
@@ -95,7 +95,7 @@ export const useNoteStore = defineStore('notes', () => {
       // Defensive Data Processing für Tags
       let processedTags: string[] = [];
       if (Array.isArray(note.tags)) {
-        processedTags = note.tags.map(tag => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim())).filter(tag => tag.length > 0);
+        processedTags = note.tags.map((tag: any) => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim())).filter(tag => tag.length > 0);
       } else if (note.tags !== undefined && note.tags !== null) {
         // Dieser Fall sollte bei einem 'Note' Objekt seltener auftreten, aber zur Sicherheit
         console.warn(`updateNote: note.tags was expected to be an array, but received type ${typeof note.tags}. Value:`, note.tags);
@@ -181,7 +181,7 @@ export const useNoteStore = defineStore('notes', () => {
 
   const allTags = computed<string[]>(() => {
     const tagsSet = new Set<string>();
-    notes.value.forEach(note => {
+    notes.value.forEach((note: Note) => {
       if (Array.isArray(note.tags)) {
         note.tags.forEach(tag => {
           if (typeof tag === 'string') {
@@ -194,7 +194,7 @@ export const useNoteStore = defineStore('notes', () => {
   });
 
   const filteredNotes = computed<Note[]>(() => {
-    return notes.value.filter(note => {
+    return notes.value.filter((note: Note) => {
       const searchLower = searchTerm.value.toLowerCase().trim();
       const titleMatch = searchLower && typeof note.title === 'string' ? note.title.toLowerCase().includes(searchLower) : true;
       const contentMatch = searchLower && typeof note.content === 'string' ? note.content.toLowerCase().includes(searchLower) : true;
@@ -202,7 +202,7 @@ export const useNoteStore = defineStore('notes', () => {
 
       const tagsMatch = selectedTags.value.length > 0
         ? selectedTags.value.every(st => 
-            Array.isArray(note.tags) && note.tags.map(t => String(t).toLowerCase()).includes(st.toLowerCase())
+            Array.isArray(note.tags) && note.tags.map((t: string) => String(t).toLowerCase()).includes(st.toLowerCase())
           )
         : true;
       

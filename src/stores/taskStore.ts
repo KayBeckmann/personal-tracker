@@ -1,15 +1,15 @@
 // src/stores/taskStore.ts
 import { defineStore } from 'pinia';
 import { db, type Task } from '@/services/db';
-import { liveQuery } from 'dexie';
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { liveQuery, type Subscription } from 'dexie';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  let liveTasksQuerySubscription: ZenObservable.Subscription | null = null;
+  let liveTasksQuerySubscription: Subscription | null = null;
 
   const fetchTasks = () => {
     isLoading.value = true;
@@ -71,7 +71,7 @@ export const useTaskStore = defineStore('tasks', () => {
   };
 
   const toggleTaskCompletion = async (id: number) => {
-    const task = tasks.value.find(t => t.id === id);
+    const task = tasks.value.find((t: Task) => t.id === id);
     if (task) {
       await updateTask({ ...task, completed: !task.completed });
     }
@@ -79,13 +79,13 @@ export const useTaskStore = defineStore('tasks', () => {
 
   // Computed Properties für das Dashboard
   const highPriorityTasksCount = computed(() => {
-    return tasks.value.filter(task => task.priority === 'high' && !task.completed).length;
+    return tasks.value.filter((task: Task) => task.priority === 'high' && !task.completed).length;
   });
 
   const nextDueTask = computed(() => {
     const upcomingTasks = tasks.value
-      .filter(task => !task.completed && task.dueDate)
-      .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+      .filter((task: Task) => !task.completed && task.dueDate)
+      .sort((a: Task, b: Task) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
     return upcomingTasks.length > 0 ? upcomingTasks[0] : null;
   });
 

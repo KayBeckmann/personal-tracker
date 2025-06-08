@@ -33,10 +33,10 @@
   }
   
   const props = defineProps<{
-    habit: HabitForDisplay;
-    showDetailsButton?: boolean;
-    showDeleteButton?: boolean;
-  }>();
+  habit: HabitForDisplay;
+  showDetailsButton?: boolean;
+  showDeleteButton?: boolean;
+}>();
   
   const emit = defineEmits(['view-details', 'delete-habit', 'completion-toggled']);
   

@@ -1,7 +1,7 @@
 // src/stores/dailyEventStore.ts
 import { defineStore } from 'pinia';
 import { db, type DailyEvent } from '@/services/db';
-import { liveQuery } from 'dexie';
+import { liveQuery, type Subscription } from 'dexie';
 import { ref, onMounted, onUnmounted } from 'vue';
 
 export const useDailyEventStore = defineStore('dailyEvents', () => {
@@ -9,7 +9,7 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  let liveEventsQuerySubscription: ZenObservable.Subscription | null = null;
+  let liveEventsQuerySubscription: Subscription | null = null;
 
   const fetchEvents = () => {
     isLoading.value = true;
@@ -69,20 +69,18 @@ export const useDailyEventStore = defineStore('dailyEvents', () => {
     }
   };
 
-  // KORRIGIERTE FUNKTION: Filtert Events für ein spezifisches Datum.
-  // Akzeptiert einen String im Format 'YYYY-MM-DD'.
   const getEventsForDate = (date: string): DailyEvent[] => {
     return events.value.filter(event => {
       // Stellt sicher, dass event.startTime ein gültiges Date-Objekt ist.
       if (event.startTime instanceof Date && !isNaN(event.startTime.getTime())) {
         return event.startTime.toISOString().split('T')[0] === date;
       }
-      // Fallback für den Fall, dass Daten inkonsistent als String gespeichert wurden.
+      // Fallback, da die DB inkonsistente Daten enthalten kann.
       if (typeof event.startTime === 'string') {
         return event.startTime.startsWith(date);
       }
       return false;
-    }).sort((a, b) => a.startTime.getTime() - b.startTime.getTime()); // Sortiert die Events des Tages nach Uhrzeit
+    }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
   };
 
   onMounted(() => {

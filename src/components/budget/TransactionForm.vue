@@ -1,192 +1,115 @@
-<template>
-  <div class="card">
-    <h3>Neue Transaktion erfassen</h3>
-    <form @submit.prevent="handleTransactionSubmit">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="type">Typ</label>
-          <select id="type" v-model="transaction.type" required>
-            <option value="expense">Ausgabe</option>
-            <option value="income">Einnahme</option>
-            <option value="transfer">Umbuchung</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="description">Beschreibung</label>
-          <input id="description" type="text" v-model="transaction.description" required />
-        </div>
-
-        <div class="form-group">
-          <label for="amount">Betrag (€)</label>
-          <input id="amount" type="number" step="0.01" min="0" v-model.number="transaction.amount" required />
-        </div>
-
-        <div class="form-group">
-          <label for="date">Datum</label>
-          <input id="date" type="date" v-model="transaction.date" required />
-        </div>
-        
-        <div class="form-group">
-          <label for="account">{{ transaction.type === 'transfer' ? 'Von Konto' : 'Konto' }}</label>
-          <select id="account" v-model.number="transaction.accountId" required>
-            <option v-if="!accounts.length" disabled value="0">Bitte zuerst Konto anlegen</option>
-            <option v-for="acc in accounts" :key="acc.id" :value="acc.id">{{ acc.name }}</option>
-          </select>
-        </div>
-        
-        <div v-if="transaction.type === 'transfer'" class="form-group">
-          <label for="toAccount">Auf Konto</label>
-          <select id="toAccount" v-model.number="transaction.toAccountId" :required="transaction.type === 'transfer'">
-            <option v-if="!availableToAccounts.length" disabled value="0">Kein anderes Konto verfügbar</option>
-            <option v-for="acc in availableToAccounts" :key="acc.id" :value="acc.id">{{ acc.name }}</option>
-          </select>
-        </div>
-
-        <div v-if="transaction.type !== 'transfer'" class="form-group">
-          <label for="category">Kategorie</label>
-          <select id="category" v-model.number="transaction.categoryId" :required="transaction.type !== 'transfer'">
-             <option v-if="!availableCategories.length" disabled value="">Bitte zuerst Kategorie anlegen</option>
-             <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-      </div>
-      <button type="submit" class="submit-btn" :disabled="!isFormValid">Transaktion speichern</button>
-    </form>
-    <p v-if="store.error" class="error-msg">{{ store.error }}</p>
-  </div>
-</template>
+// src/components/budget/TransactionForm.vue
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue';
+import { reactive, computed, watch, defineProps, defineEmits } from 'vue';
 import { useBudgetStore } from '@/stores/budgetStore';
-import { storeToRefs } from 'pinia';
-import type { Category } from '@/services/db';
+import type { Transaction, Category } from '@/services/db';
 
-const store = useBudgetStore();
-const { accounts, categories } = storeToRefs(store);
+const props = defineProps<{
+  initialData?: Transaction | null;
+}>();
 
-const getInitialTransactionState = () => ({
-  type: 'expense' as 'income' | 'expense' | 'transfer',
+const emit = defineEmits(['close', 'save']);
+
+const budgetStore = useBudgetStore();
+const { accounts, categories } = budgetStore;
+
+type TransactionFormData = {
+  type: 'income' | 'expense' | 'transfer';
+  description: string;
+  amount: number;
+  date: string;
+  accountId: number;
+  toAccountId?: number;
+  categoryId?: number;
+};
+
+const getInitialState = (): TransactionFormData => ({
+  type: 'expense',
   description: '',
   amount: 0,
   date: new Date().toISOString().split('T')[0],
-  accountId: accounts.value[0]?.id || 0,
-  toAccountId: undefined as number | undefined,
-  categoryId: undefined as number | undefined,
+  accountId: accounts.length > 0 ? accounts[0].id! : 0,
+  toAccountId: undefined,
+  categoryId: undefined
 });
 
-const transaction = reactive(getInitialTransactionState());
+const initialState = getInitialState();
+const transaction = reactive<TransactionFormData>({ ...initialState });
 
-const availableCategories = computed<Category[]>(() => {
-  return categories.value.filter(c => c.type === transaction.type);
+const availableCategories = computed(() => {
+  return categories.filter((c: Category) => c.type === transaction.type);
 });
 
 const availableToAccounts = computed(() => {
-    return accounts.value.filter(acc => acc.id !== transaction.accountId);
+    if (!transaction.accountId) return accounts;
+    return accounts.filter((acc: any) => acc.id !== transaction.accountId);
 });
 
 const isFormValid = computed(() => {
-    if(!transaction.accountId || transaction.amount <= 0) return false;
-    if(transaction.type === 'transfer') return !!transaction.toAccountId;
-    if(transaction.type !== 'transfer') return !!transaction.categoryId;
-    return true;
+  if(transaction.type !== 'transfer') return !!transaction.categoryId;
+  return !!transaction.toAccountId;
 });
 
-watch(() => transaction.type, (newType) => {
-    transaction.categoryId = undefined;
-    transaction.toAccountId = undefined;
-    if (newType === 'transfer' && accounts.value.length > 1) {
-        transaction.toAccountId = availableToAccounts.value[0]?.id;
-    } else if (newType !== 'transfer' && availableCategories.value.length > 0) {
-        transaction.categoryId = availableCategories.value[0]?.id;
-    }
-});
-
-watch(accounts, (newAccounts) => {
-    if (!transaction.accountId && newAccounts.length > 0) {
-        transaction.accountId = newAccounts[0].id!;
-    }
+watch(() => props.initialData, (data) => {
+  if (data) {
+    Object.assign(transaction, {
+        ...data,
+        date: new Date(data.date).toISOString().split('T')[0],
+        amount: Math.abs(data.amount)
+    });
+  }
 }, { immediate: true });
 
+watch(() => transaction.type, () => {
+    transaction.categoryId = undefined;
+    transaction.toAccountId = undefined;
+});
 
-const handleTransactionSubmit = async () => {
-    if (!isFormValid.value) return;
-
-    if (transaction.type === 'transfer' && transaction.accountId === transaction.toAccountId) {
-        alert("Quell- und Zielkonto dürfen nicht identisch sein.");
-        return;
+const resetForm = () => {
+    const freshState = getInitialState();
+    for (const key in freshState) {
+        (transaction as any)[key] = (freshState as any)[key];
     }
-
-    await store.addTransaction({
-        type: transaction.type,
-        description: transaction.description,
-        amount: transaction.amount,
-        date: new Date(transaction.date),
-        accountId: transaction.accountId,
-        categoryId: transaction.categoryId,
-        toAccountId: transaction.toAccountId,
-    });
-    
-    // Reset form
-    const initialState = getInitialTransactionState();
-    Object.keys(initialState).forEach(key => {
-        transaction[key] = initialState[key];
-    });
 };
+
+const save = () => {
+  emit('save', transaction, props.initialData?.id);
+  resetForm();
+};
+
 </script>
 
-<style scoped>
-.card {
-  background-color: var(--color-background, #fff);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-.form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--color-text-soft);
-}
-.form-group input, .form-group select {
-  padding: 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-background-soft);
-  font-size: 1rem;
-}
-.submit-btn {
-  margin-top: 1.5rem;
-  width: 100%;
-  padding: 0.85rem;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-.submit-btn:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-}
-.submit-btn:disabled {
-    background-color: var(--color-secondary);
-    cursor: not-allowed;
-}
-.error-msg {
-    color: var(--color-danger);
-    margin-top: 1rem;
-    text-align: center;
-}
-</style>
+<template>
+  <form @submit.prevent="save" class="transaction-form card">
+    <div class="form-group">
+      <label>Type</label>
+      <select v-model="transaction.type">
+        <option value="expense">Expense</option>
+        <option value="income">Income</option>
+        <option value="transfer">Transfer</option>
+      </select>
+    </div>
+
+    <div class="form-group" v-if="transaction.type !== 'transfer'">
+      <label for="category">Category</label>
+      <select id="category" v-model.number="transaction.categoryId" :required="transaction.type !== 'transfer'">
+        <option disabled :value="undefined">Select a category</option>
+        <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+      </select>
+    </div>
+
+    <div class="form-group" v-if="transaction.type === 'transfer'">
+      <label for="toAccount">To Account</label>
+      <select id="toAccount" v-model.number="transaction.toAccountId" required>
+        <option disabled :value="undefined">Select target account</option>
+        <option v-for="acc in availableToAccounts" :key="acc.id" :value="acc.id">{{ acc.name }}</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Save</button>
+        <button type="button" @click="$emit('close')" class="btn btn-secondary">Cancel</button>
+    </div>
+  </form>
+</template>

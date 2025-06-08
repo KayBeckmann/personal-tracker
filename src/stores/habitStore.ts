@@ -1,7 +1,7 @@
 // src/stores/habitStore.ts
 import { defineStore } from 'pinia';
 import { db, type Habit, type HabitEntry } from '@/services/db';
-import { liveQuery } from 'dexie';
+import { liveQuery, type Subscription } from 'dexie';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 function getTodayDateString(): string {
@@ -14,8 +14,8 @@ export const useHabitStore = defineStore('habits', () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  let liveHabitsQuerySubscription: ZenObservable.Subscription | null = null;
-  let liveHabitEntriesQuerySubscription: ZenObservable.Subscription | null = null;
+  let liveHabitsQuerySubscription: Subscription | null = null;
+  let liveHabitEntriesQuerySubscription: Subscription | null = null;
 
   const fetchAllData = () => {
     isLoading.value = true;
@@ -47,7 +47,7 @@ export const useHabitStore = defineStore('habits', () => {
       })
     ]).then(() => {
       // Refresh streaks for all habits after data is fetched
-      habits.value.forEach(habit => {
+      habits.value.forEach((habit: Habit) => {
         if (habit.id !== undefined) {
           updateHabitStreak(habit.id);
         }
@@ -125,7 +125,7 @@ export const useHabitStore = defineStore('habits', () => {
   
   const toggleHabitCompletionForToday = async (habitId: number) => {
     const todayStr = getTodayDateString();
-    const habit = habits.value.find(h => h.id === habitId);
+    const habit = habits.value.find((h: Habit) => h.id === habitId);
     if (!habit || habit.id === undefined) {
         error.value = 'Habit not found.';
         return;
@@ -136,19 +136,19 @@ export const useHabitStore = defineStore('habits', () => {
   };
 
   const isHabitCompletedOnDate = (habitId: number, date: string): boolean => {
-    return habitEntries.value.some(entry => entry.habitId === habitId && entry.date === date && entry.completed);
+    return habitEntries.value.some((entry: HabitEntry) => entry.habitId === habitId && entry.date === date && entry.completed);
   }
 
   const updateHabitStreak = async (habitId: number) => {
-    const habit = habits.value.find(h => h.id === habitId);
+    const habit = habits.value.find((h: Habit) => h.id === habitId);
     if (!habit) return;
 
     // KORREKTUR: Lies die Einträge direkt aus der DB, um eine Race Condition 
     // mit dem reaktiven 'habitEntries' Ref zu vermeiden.
     const allEntriesForHabit = await db.habitEntries.where('habitId').equals(habitId).toArray();
     const entriesForHabit = allEntriesForHabit
-        .filter(e => e.completed)
-        .sort((a, b) => b.date.localeCompare(a.date));
+        .filter((e: HabitEntry) => e.completed)
+        .sort((a: HabitEntry, b: HabitEntry) => b.date.localeCompare(a.date));
 
     let currentStreak = 0;
     let lastCompletionDateObj: Date | null = null;
@@ -194,16 +194,16 @@ export const useHabitStore = defineStore('habits', () => {
   };
 
   const getHabitById = (id: number): Habit | undefined => {
-    return habits.value.find(h => h.id === id);
+    return habits.value.find((h: Habit) => h.id === id);
   }
 
   const getEntriesForHabit = (habitId: number): HabitEntry[] => {
-    return habitEntries.value.filter(entry => entry.habitId === habitId);
+    return habitEntries.value.filter((entry: HabitEntry) => entry.habitId === habitId);
   }
 
   const habitsForTodayDashboard = computed(() => {
     const todayStr = getTodayDateString();
-    return habits.value.map(habit => {
+    return habits.value.map((habit: Habit) => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);
       let isDue = false;
       if (habit.frequency === 'daily') {
@@ -218,7 +218,7 @@ export const useHabitStore = defineStore('habits', () => {
         completedToday,
         isDue
       };
-    }).filter(h => h.isDue);
+    }).filter((h: any) => h.isDue);
   });
 
   onMounted(() => {

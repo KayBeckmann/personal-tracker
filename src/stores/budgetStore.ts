@@ -1,6 +1,6 @@
 // src/stores/budgetStore.ts
 import { defineStore } from 'pinia';
-import { liveQuery } from 'dexie';
+import { liveQuery, type Subscription } from 'dexie';
 import { db, type Account, type Category, type Transaction } from '@/services/db';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
@@ -13,9 +13,9 @@ export const useBudgetStore = defineStore('budget', () => {
   const error = ref<string | null>(null);
 
   // Live Query Subscriptions
-  let accSub: ZenObservable.Subscription | null = null;
-  let catSub: ZenObservable.Subscription | null = null;
-  let transSub: ZenObservable.Subscription | null = null;
+  let accSub: Subscription | null = null;
+  let catSub: Subscription | null = null;
+  let transSub: Subscription | null = null;
 
   const fetchAll = () => {
     isLoading.value = true;
@@ -205,7 +205,7 @@ export const useBudgetStore = defineStore('budget', () => {
   // --- Computed Properties (Getters) ---
 
   const totalBalance = computed(() => {
-    return accounts.value.reduce((sum, account) => sum + account.balance, 0);
+    return accounts.value.reduce((sum: number, account: Account) => sum + account.balance, 0);
   });
   
   const last3FullMonthsAverage = computed(() => {

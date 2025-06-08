@@ -1,3 +1,4 @@
+// src/services/db.ts
 import Dexie, { type Table } from 'dexie';
 
 export interface Task {
@@ -43,7 +44,7 @@ export interface DailyEvent {
   title: string;
   description?: string;
   type: string; // z.B. 'Arbeit', 'Privat', 'Lernen'
-  startTime: Date;
+  startTime: Date | string; // KORREKTUR: Erlaube auch string für den Fall von inkonsistenten Daten
   endTime?: Date;
   createdAt: Date;
 }
@@ -107,6 +108,14 @@ export class MySubClassedDexie extends Dexie {
       categories: '++id, name, type',
       // Indizes für Transaktionen zur Beschleunigung von Abfragen
       transactions: '++id, accountId, categoryId, date, type, toAccountId',
+    });
+
+    // Wandle startTime beim Lesen aus der DB in ein Date-Objekt um
+    this.dailyEvents.hook('reading', (obj) => {
+      if (typeof obj.startTime === 'string') {
+        obj.startTime = new Date(obj.startTime);
+      }
+      return obj;
     });
   }
 }
