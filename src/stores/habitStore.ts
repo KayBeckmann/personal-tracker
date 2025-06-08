@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { db, type Habit, type HabitEntry } from '@/services/db';
 import { liveQuery, type Subscription } from 'dexie';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import type { HabitForDisplay } from '@/types';
 
 function getTodayDateString(): string {
   return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -201,24 +202,18 @@ export const useHabitStore = defineStore('habits', () => {
     return habitEntries.value.filter((entry: HabitEntry) => entry.habitId === habitId);
   }
 
-  const habitsForTodayDashboard = computed(() => {
+  const habitsForTodayDashboard = computed((): HabitForDisplay[] => {
     const todayStr = getTodayDateString();
-    return habits.value.map((habit: Habit) => {
+    // FIX: Simplified the logic for `isDue`. Since all frequency types should be displayed,
+    // this is always true. This also correctly types the output as HabitForDisplay[].
+    return habits.value.map((habit) => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);
-      let isDue = false;
-      if (habit.frequency === 'daily') {
-        isDue = true;
-      } else if (habit.frequency === 'weekly') {
-        isDue = true; 
-      } else if (habit.frequency === 'monthly') {
-        isDue = true;
-      }
       return {
         ...habit,
         completedToday,
-        isDue
+        isDue: true, // All habits are considered "due" for display
       };
-    }).filter((h: any) => h.isDue);
+    });
   });
 
   onMounted(() => {
