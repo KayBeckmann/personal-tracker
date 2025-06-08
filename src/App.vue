@@ -5,6 +5,16 @@
       <RouterView />
     </main>
   </div>
+  <footer>
+      <p>&copy; {{ new Date().getFullYear() }} Meine Produktivitäts-App</p>
+      <PwaReloadPrompt />
+
+      <div>
+        Über einen 
+        <a href="https://www.buymeacoffee.com/snuppedelua" target="_blank" rel="noopener noreferrer">Kaffee</a>
+        würde ich mich freuen!
+      </div>
+    </footer>
 </template>
 
 <script setup lang="ts">
@@ -13,6 +23,14 @@ import { RouterView } from 'vue-router';
 </script>
 
 <style scoped>
+footer {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #dee2e6;
+}
 #app-wrapper {
   display: flex;
   flex-direction: column;
