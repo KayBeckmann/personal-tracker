@@ -9,6 +9,19 @@ function getTodayDateString(): string {
   return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
+// Hilfsfunktion: Gibt den Montag der Woche für ein gegebenes Datum zurück.
+function getStartOfWeek(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Passe an, sodass Montag der erste Tag ist
+  return new Date(d.setDate(diff));
+}
+
+// Hilfsfunktion: Gibt den ersten Tag des Monats für ein gegebenes Datum zurück.
+function getStartOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
 export const useHabitStore = defineStore('habits', () => {
   const habits = ref<Habit[]>([]);
   const habitEntries = ref<HabitEntry[]>([]);
@@ -20,9 +33,9 @@ export const useHabitStore = defineStore('habits', () => {
 
   const fetchAllData = () => {
     isLoading.value = true;
-    error.value = null; // Reset error on new fetch
+    error.value = null;
     Promise.all([
-      new Promise<void>((resolve, reject) => { // Added reject
+      new Promise<void>((resolve, reject) => {
         if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habits.orderBy('createdAt').toArray());
         liveHabitsQuerySubscription = obs.subscribe({
@@ -30,11 +43,11 @@ export const useHabitStore = defineStore('habits', () => {
           error: err => {
             console.error('Dexie liveQuery error (habits):', err);
             error.value = "Failed to load habits";
-            reject(err); // Propagate error
+            reject(err);
           }
         });
       }),
-      new Promise<void>((resolve, reject) => { // Added reject
+      new Promise<void>((resolve, reject) => {
         if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habitEntries.orderBy('date').toArray());
         liveHabitEntriesQuerySubscription = obs.subscribe({
@@ -42,21 +55,19 @@ export const useHabitStore = defineStore('habits', () => {
           error: err => {
             console.error('Dexie liveQuery error (habitEntries):', err);
             error.value = "Failed to load habit entries";
-            reject(err); // Propagate error
+            reject(err);
           }
         });
       })
     ]).then(() => {
-      // Refresh streaks for all habits after data is fetched
       habits.value.forEach((habit: Habit) => {
         if (habit.id !== undefined) {
           updateHabitStreak(habit.id);
         }
       });
     }).catch(err => {
-        // isLoading is set to false in finally, but we can log aggregated error
         console.error("Error fetching all habit data:", err);
-        if (!error.value) { // Set a general error if specific one wasn't set
+        if (!error.value) {
             error.value = "Failed to load all habit data.";
         }
     }).finally(() => {
@@ -64,13 +75,12 @@ export const useHabitStore = defineStore('habits', () => {
     });
   };
 
-
   const addHabit = async (habitData: Omit<Habit, 'id' | 'createdAt' | 'streak' | 'lastCompleted' | 'description'> & { description?: string }) => {
     try {
       await db.habits.add({
         name: habitData.name,
         frequency: habitData.frequency,
-        description: habitData.description || '', // Ensure description is always a string
+        description: habitData.description || '',
         streak: 0,
         createdAt: new Date(),
       });
@@ -116,7 +126,7 @@ export const useHabitStore = defineStore('habits', () => {
       } else {
         await db.habitEntries.add({ habitId, date, completed });
       }
-      await updateHabitStreak(habitId); // Streak aktualisieren
+      await updateHabitStreak(habitId);
       error.value = null;
     } catch (e) {
       console.error('Failed to log habit date:', e);
@@ -131,98 +141,117 @@ export const useHabitStore = defineStore('habits', () => {
         error.value = 'Habit not found.';
         return;
     }
-
     const isCompleted = isHabitCompletedOnDate(habit.id, todayStr);
     await logHabitDate(habit.id, todayStr, !isCompleted);
   };
 
   const isHabitCompletedOnDate = (habitId: number, date: string): boolean => {
-    return habitEntries.value.some((entry: HabitEntry) => entry.habitId === habitId && entry.date === date && entry.completed);
+    return habitEntries.value.some(entry => entry.habitId === habitId && entry.date === date && entry.completed);
   }
 
   const updateHabitStreak = async (habitId: number) => {
-    const habit = habits.value.find((h: Habit) => h.id === habitId);
+    const habit = habits.value.find(h => h.id === habitId);
     if (!habit) return;
 
-    // KORREKTUR: Lies die Einträge direkt aus der DB, um eine Race Condition 
-    // mit dem reaktiven 'habitEntries' Ref zu vermeiden.
     const allEntriesForHabit = await db.habitEntries.where('habitId').equals(habitId).toArray();
-    const entriesForHabit = allEntriesForHabit
-        .filter((e: HabitEntry) => e.completed)
-        .sort((a: HabitEntry, b: HabitEntry) => b.date.localeCompare(a.date));
+    const completedEntries = allEntriesForHabit
+        .filter(e => e.completed)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    let currentStreak = 0;
-    let lastCompletionDateObj: Date | null = null;
-
-    if (entriesForHabit.length === 0) {
+    if (completedEntries.length === 0) {
       await updateHabit({ ...habit, streak: 0, lastCompleted: undefined });
       return;
     }
 
+    const lastCompletionDate = new Date(completedEntries[0].date);
     const today = new Date(getTodayDateString());
-    let expectedDate = new Date(today);
+    let currentStreak = habit.streak;
+    let isBroken = false;
 
-    if (entriesForHabit.length > 0) {
-        lastCompletionDateObj = new Date(entriesForHabit[0].date);
-    }
-
-    if (habit.frequency === 'daily') {
-      const mostRecentEntryDate = new Date(entriesForHabit[0].date);
-      const diffDaysWithToday = (today.getTime() - mostRecentEntryDate.getTime()) / (1000 * 3600 * 24);
-
-      if (diffDaysWithToday > 1) {
-         currentStreak = 0;
-      } else {
-        for (const entry of entriesForHabit) {
-          const entryDate = new Date(entry.date);
-          if (entryDate.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
-            currentStreak++;
-            expectedDate.setDate(expectedDate.getDate() - 1);
-          } else if (entryDate < expectedDate) {
+    switch (habit.frequency) {
+        case 'daily':
+            const diffDays = (today.getTime() - lastCompletionDate.getTime()) / (1000 * 3600 * 24);
+            if (diffDays > 1) {
+                isBroken = true;
+            }
             break;
-          }
-        }
-      }
-    } else {
-      if (entriesForHabit.length > 0 && entriesForHabit[0].date === getTodayDateString()) {
-         currentStreak = entriesForHabit.length > 0 ? 1 : 0;
-      } else if (entriesForHabit.length > 0) {
-        currentStreak = 0;
-      }
+        case 'weekly':
+            const startOfThisWeek = getStartOfWeek(today);
+            if (lastCompletionDate < startOfThisWeek) {
+                isBroken = true;
+            }
+            break;
+        case 'monthly':
+            const startOfThisMonth = getStartOfMonth(today);
+            if (lastCompletionDate < startOfThisMonth) {
+                isBroken = true;
+            }
+            break;
     }
 
-    await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDateObj || undefined });
+    if (isBroken) {
+        currentStreak = 0;
+    } else {
+        // Neuberechnung des Streaks basierend auf den Einträgen
+        // Diese Logik kann komplex sein, hier eine vereinfachte Version:
+        // Ein einfacher Ansatz ist, nur den letzten Eintrag zu prüfen.
+        // Bei täglichen Gewohnheiten könnte man eine Kette prüfen.
+        // Für wöchentlich/monatlich ist ein einfacher "gemacht in diesem Zeitraum" Ansatz oft ausreichend.
+        currentStreak = completedEntries.length > 0 ? 1 : 0; // Simple "done" flag für wöchentlich/monatlich
+        if (habit.frequency === 'daily' && !isBroken) {
+            // Eine genauere tägliche Streak-Berechnung...
+            let streak = 0;
+            let expectedDate = new Date(today);
+            if((today.getTime() - lastCompletionDate.getTime()) / (1000 * 3600 * 24) > 1){
+                // streak stays 0
+            } else {
+                 if((today.getTime() - lastCompletionDate.getTime()) / (1000 * 3600 * 24) <= 1){
+                     expectedDate = new Date(lastCompletionDate);
+                 }
+
+                for (const entry of completedEntries) {
+                    const entryDate = new Date(entry.date);
+                    if (entryDate.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
+                        streak++;
+                        expectedDate.setDate(expectedDate.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+            }
+            currentStreak = streak;
+        }
+    }
+
+    await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDate });
   };
 
+
   const getHabitById = (id: number): Habit | undefined => {
-    return habits.value.find((h: Habit) => h.id === id);
+    return habits.value.find(h => h.id === id);
   }
 
   const getEntriesForHabit = (habitId: number): HabitEntry[] => {
-    return habitEntries.value.filter((entry: HabitEntry) => entry.habitId === habitId);
+    return habitEntries.value.filter(entry => entry.habitId === habitId);
   }
 
   const habitsForTodayDashboard = computed((): HabitForDisplay[] => {
     const todayStr = getTodayDateString();
-    // FIX: Simplified the logic for `isDue`. Since all frequency types should be displayed,
-    // this is always true. This also correctly types the output as HabitForDisplay[].
     return habits.value.map((habit) => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);
       return {
         ...habit,
         completedToday,
-        isDue: true, // All habits are considered "due" for display
+        isDue: true,
       };
     });
   });
 
-  onMounted(() => {
-    fetchAllData();
-  });
+  onMounted(fetchAllData);
 
   onUnmounted(() => {
-    if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
-    if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
+    liveHabitsQuerySubscription?.unsubscribe();
+    liveHabitEntriesQuerySubscription?.unsubscribe();
   });
 
   return {

@@ -214,6 +214,15 @@ select.form-control {
   font-size: 1.25rem;
 }
 
+
+/* KORRIGIERTER/VEREINFACHTER Chart-Container */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
 /* Responsive Anpassung für den App-Container */
 @media (max-width: 768px) {
   body {

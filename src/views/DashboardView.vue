@@ -1,204 +1,170 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard-view">
     <h1>Dashboard</h1>
-
-    <h2>At a Glance</h2>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>High Priority Tasks</h3>
-        <p class="stat-number">{{ taskStore.highPriorityTasksCount }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Next Due Task</h3>
-        <p v-if="taskStore.nextDueTask" class="stat-detail">
-          {{ taskStore.nextDueTask.title }} on {{ formatDate(taskStore.nextDueTask.dueDate) }}
-        </p>
-        <p v-else>No upcoming tasks</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Total Balance</h3>
-        <p class="stat-number">{{ formatCurrency(budgetStore.totalBalance) }}</p>
-      </div>
-       <div class="stat-card">
-        <h3>End of Month Forecast</h3>
-        <p class="stat-detail">
-            <span>Income: ~{{ formatCurrency(budgetStore.endOfMonthForecast.estimatedIncome) }}</span><br>
-            <span>Expense: ~{{ formatCurrency(budgetStore.endOfMonthForecast.estimatedExpense, true) }}</span>
-        </p>
-      </div>
+    <div v-if="isLoading" class="loading-indicator">
+      <p>Lade Dashboard-Daten...</p>
     </div>
-
-    <h2>Today's Habits</h2>
-    <div class="habits-section">
-      <div v-if="habitStore.isLoading">Loading habits...</div>
-      <div v-else-if="habitStore.habitsForTodayDashboard.length > 0" class="habits-grid">
-        <div 
-          v-for="habit in habitStore.habitsForTodayDashboard" 
-          :key="habit.id" 
-          class="habit-card" 
-          :class="{ 'completed': habit.completedToday }">
-            <span class="habit-name">{{ habit.name }}</span>
-            <input 
-              type="checkbox"
-              :checked="habit.completedToday"
-              @change="toggleHabit(habit.id!)"
-              class="habit-checkbox"
-              :aria-label="`Mark ${habit.name} as ${habit.completedToday ? 'not done' : 'done'}`"
-            />
+    <div v-else class="grid-container">
+      <div class="card task-summary-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-list-check"></i> Aufgaben-Überblick</h3>
+        </div>
+        <div class="card-content">
+          <div class="summary-item">
+            <span class="count">{{ highPriorityTasksCount }}</span>
+            <p>Offene Aufgaben mit hoher Priorität</p>
+          </div>
+          <div v-if="nextDueTask && nextDueTask.dueDate" class="summary-item">
+            <h4>Nächste fällige Aufgabe:</h4>
+            <p><strong>{{ nextDueTask.title }}</strong></p>
+            <span>Fällig am: {{ new Date(nextDueTask.dueDate).toLocaleDateString('de-DE') }}</span>
+          </div>
+          <div v-else class="summary-item">
+            <p>Keine fälligen Aufgaben.</p>
+          </div>
         </div>
       </div>
-      <p v-else>No habits scheduled for today.</p>
-    </div>
 
-    <div class="chart-container">
-        <h2>Expense Distribution</h2>
-        <ExpensePieChart v-if="!budgetStore.isLoading && budgetStore.expensePieChartData.datasets[0].data.length" :data="budgetStore.expensePieChartData" />
-        <p v-else-if="budgetStore.isLoading">Loading chart data...</p>
-        <p v-else>No expense data available for the chart.</p>
+      <div class="card habits-today-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-person-walking"></i> Heutige Gewohnheiten</h3>
+        </div>
+        <div class="card-content">
+          <ul v-if="habitsForTodayDashboard.length">
+            <li v-for="habit in habitsForTodayDashboard" :key="habit.id"
+                :class="{ completed: habit.completedToday }">
+              <i :class="['fa-solid', habit.completedToday ? 'fa-check-square' : 'fa-square']"></i>
+              {{ habit.name }} (Streak: {{ habit.streak }})
+            </li>
+          </ul>
+          <p v-else>Für heute stehen keine Gewohnheiten an.</p>
+        </div>
+      </div>
+
+      <div class="card budget-chart-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-chart-pie"></i> Ausgaben nach Kategorie</h3>
+        </div>
+        <div class="card-content">
+           <div v-if="hasExpenses" class="chart-container">
+            <Pie :data="expensePieChartData" :options="chartOptions" />
+          </div>
+          <p v-else>Keine Ausgaben vorhanden, um ein Diagramm anzuzeigen.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useTaskStore } from '@/stores/taskStore';
-import { useBudgetStore } from '@/stores/budgetStore';
 import { useHabitStore } from '@/stores/habitStore';
-import { onMounted } from 'vue';
-import ExpensePieChart from '@/components/ExpensePieChart.vue';
+import { useBudgetStore } from '@/stores/budgetStore';
+import { Pie } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
 
+ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
+
+// Task Store
 const taskStore = useTaskStore();
-const budgetStore = useBudgetStore();
+const { highPriorityTasksCount, nextDueTask } = storeToRefs(taskStore);
+
+// Habit Store
 const habitStore = useHabitStore();
+const { habitsForTodayDashboard } = storeToRefs(habitStore);
 
-onMounted(() => {
-  taskStore.fetchTasks();
-  budgetStore.fetchAll();
-  habitStore.fetchAllData();
-});
+// Budget Store
+const budgetStore = useBudgetStore();
+const { expensePieChartData, isLoading } = storeToRefs(budgetStore);
 
-const toggleHabit = (habitId: number) => {
-  if (typeof habitId === 'number') {
-    habitStore.toggleHabitCompletionForToday(habitId);
+const hasExpenses = computed(() => 
+  expensePieChartData.value.datasets[0] && expensePieChartData.value.datasets[0].data.length > 0
+);
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+      labels: {
+        color: '#f0f6fc'
+      }
+    },
+    title: {
+      display: false
+    }
   }
 };
-
-const formatCurrency = (value: number, isExpense: boolean = false) => {
-  const absValue = isExpense ? Math.abs(value) : value;
-  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(absValue);
-};
-
-const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('de-DE');
-}
 </script>
 
 <style scoped>
-.dashboard {
-  text-align: left;
+.dashboard-view h1 {
+  margin-bottom: 1.5rem;
 }
-h2 {
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 0.5rem;
-}
-.stats-grid, .habits-grid {
+
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 1.5rem;
 }
-.stat-card {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
+
+.card {
+  display: flex;
+  flex-direction: column;
 }
-.stat-card:hover {
-    transform: translateY(-5px);
+
+.card-header {
+  flex-shrink: 0;
 }
-.stat-card h3 {
-  margin-top: 0;
-  color: var(--color-heading);
+
+.card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-.stat-number {
-  font-size: 2.5rem;
+
+.summary-item {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.summary-item .count {
+  font-size: 3rem;
   font-weight: bold;
   color: var(--color-primary);
-}
-.stat-detail {
-    font-size: 1rem;
-    color: var(--color-text-soft);
-    line-height: 1.5;
+  display: block;
 }
 
-/* Corrected habit-card styles */
-.habit-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: all 0.2s;
-}
-.habit-card.completed {
-    background-color: var(--color-info-background);
-    border-color: var(--color-info-border);
-    color: var(--color-text-soft);
-}
-.habit-name {
-    font-weight: 500;
-    padding-right: 1rem;
-}
-.habit-checkbox {
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    flex-shrink: 0;
-    
-    /* Better custom checkbox styling */
-    appearance: none;
-    -webkit-appearance: none;
-    background-color: var(--color-background-soft);
-    border: 2px solid var(--color-border-hover);
-    border-radius: 4px;
-    display: grid;
-    place-content: center;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-.habit-checkbox:hover {
-    border-color: var(--color-primary);
-}
-.habit-checkbox::before {
-    content: '';
-    width: 12px;
-    height: 12px;
-    transform: scale(0);
-    transition: 120ms transform ease-in-out;
-    box-shadow: inset 1em 1em var(--color-primary);
-    transform-origin: bottom left;
-    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-}
-.habit-checkbox:checked {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary);
-}
-.habit-checkbox:checked::before {
-    transform: scale(1);
+.habits-today-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.chart-container {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  height: 450px;
+.habits-today-card li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.habits-today-card li.completed {
+  text-decoration: line-through;
+  color: var(--color-text-soft);
+}
+
+.habits-today-card li .fa-solid {
+  margin-right: 0.5rem;
+}
+
+.habits-today-card li:last-child {
+  border-bottom: none;
+}
+
+.budget-chart-card .card-content {
+  min-height: 300px; 
 }
 </style>
