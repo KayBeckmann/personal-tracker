@@ -1,11 +1,12 @@
 // src/stores/budgetStore.ts
+
 import { defineStore } from 'pinia';
 import { liveQuery, type Subscription } from 'dexie';
 import { db, type Account, type Category, type Transaction } from '@/services/db';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 export const useBudgetStore = defineStore('budget', () => {
-  // State
+  // ... (bestehender State und Subscriptions bleiben gleich) ...
   const accounts = ref<Account[]>([]);
   const categories = ref<Category[]>([]);
   const transactions = ref<Transaction[]>([]);
@@ -55,17 +56,20 @@ export const useBudgetStore = defineStore('budget', () => {
     transSub?.unsubscribe();
   });
 
+
   // --- Actions ---
 
-  const addAccount = async (data: Omit<Account, 'id' | 'createdAt' | 'balance'>) => {
+  // MODIFIZIERT: Akzeptiert jetzt 'balance' direkt.
+  const addAccount = async (data: Omit<Account, 'id' | 'createdAt'>) => {
     try {
-      await db.accounts.add({ ...data, balance: 0, createdAt: new Date() });
+      await db.accounts.add({ ...data, createdAt: new Date() });
     } catch (e) {
       console.error(e);
       error.value = "Failed to add account.";
     }
   };
-  
+
+  // ... (restliche Aktionen wie addCategory, addTransaction etc. bleiben unverändert) ...
   const addCategory = async (data: Omit<Category, 'id' | 'createdAt'>) => {
     try {
       await db.categories.add({ ...data, createdAt: new Date() });
