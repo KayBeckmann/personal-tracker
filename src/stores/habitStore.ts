@@ -6,7 +6,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import type { HabitForDisplay } from '@/types';
 
 function getTodayDateString(): string {
-  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  return new Date().toISOString().split('T')[0]; // yyyy-MM-dd
 }
 
 // Hilfsfunktion: Gibt den Montag der Woche für ein gegebenes Datum zurück.
@@ -27,14 +27,9 @@ export const useHabitStore = defineStore('habits', () => {
   const habitEntries = ref<HabitEntry[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const dataVersion = ref(0); // Reactivity trigger
 
   let liveHabitsQuerySubscription: Subscription | null = null;
   let liveHabitEntriesQuerySubscription: Subscription | null = null;
-
-  const forceRecompute = () => {
-    dataVersion.value++;
-  };
 
   const fetchAllData = () => {
     isLoading.value = true;
@@ -44,7 +39,7 @@ export const useHabitStore = defineStore('habits', () => {
         if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habits.orderBy('createdAt').toArray());
         liveHabitsQuerySubscription = obs.subscribe({
-          next: res => { habits.value = res; forceRecompute(); resolve(); },
+          next: res => { habits.value = res; resolve(); },
           error: err => {
             console.error('Dexie liveQuery error (habits):', err);
             error.value = "Failed to load habits";
@@ -56,7 +51,7 @@ export const useHabitStore = defineStore('habits', () => {
         if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habitEntries.orderBy('date').toArray());
         liveHabitEntriesQuerySubscription = obs.subscribe({
-          next: res => { habitEntries.value = res; forceRecompute(); resolve(); },
+          next: res => { habitEntries.value = res; resolve(); },
           error: err => {
             console.error('Dexie liveQuery error (habitEntries):', err);
             error.value = "Failed to load habit entries";
@@ -198,10 +193,6 @@ export const useHabitStore = defineStore('habits', () => {
         currentStreak = 0;
     } else {
         // Neuberechnung des Streaks basierend auf den Einträgen
-        // Diese Logik kann komplex sein, hier eine vereinfachte Version:
-        // Ein einfacher Ansatz ist, nur den letzten Eintrag zu prüfen.
-        // Bei täglichen Gewohnheiten könnte man eine Kette prüfen.
-        // Für wöchentlich/monatlich ist ein einfacher "gemacht in diesem Zeitraum" Ansatz oft ausreichend.
         currentStreak = completedEntries.length > 0 ? 1 : 0; // Simple "done" flag für wöchentlich/monatlich
         if (habit.frequency === 'daily' && !isBroken) {
             // Eine genauere tägliche Streak-Berechnung...
@@ -241,7 +232,6 @@ export const useHabitStore = defineStore('habits', () => {
   }
 
   const habitsForTodayDashboard = computed((): HabitForDisplay[] => {
-    const _ = dataVersion.value; // Depend on the reactivity trigger
     const todayStr = getTodayDateString();
     return habits.value.map((habit) => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);

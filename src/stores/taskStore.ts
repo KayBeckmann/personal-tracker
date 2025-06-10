@@ -8,18 +8,13 @@ export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const dataVersion = ref(0); // Reactivity trigger
 
+  // ... (fetchTasks, addTask, etc. bleiben unverändert) ...
   let liveTasksQuerySubscription: Subscription | null = null;
-
-  const forceRecompute = () => {
-    dataVersion.value++;
-  };
 
   const fetchTasks = () => {
     isLoading.value = true;
     error.value = null;
-    // Um memory leaks zu vermeiden, vorheriges Abo kündigen
     if (liveTasksQuerySubscription) {
       liveTasksQuerySubscription.unsubscribe();
     }
@@ -27,7 +22,6 @@ export const useTaskStore = defineStore('tasks', () => {
     liveTasksQuerySubscription = observable.subscribe({
       next: (result) => {
         tasks.value = result;
-        forceRecompute(); // Trigger reactivity when liveQuery updates
         isLoading.value = false;
       },
       error: (err) => {
@@ -45,7 +39,6 @@ export const useTaskStore = defineStore('tasks', () => {
         completed: false,
         createdAt: new Date(),
       });
-      // fetchTasks(); // Nicht nötig bei liveQuery, wird automatisch aktualisiert
     } catch (e) {
       console.error('Failed to add task:', e);
       error.value = 'Failed to add task.';
@@ -59,7 +52,6 @@ export const useTaskStore = defineStore('tasks', () => {
     }
     try {
       await db.tasks.update(task.id, task);
-      // fetchTasks();
     } catch (e) {
       console.error('Failed to update task:', e);
       error.value = 'Failed to update task.';
@@ -69,7 +61,6 @@ export const useTaskStore = defineStore('tasks', () => {
   const deleteTask = async (id: number) => {
     try {
       await db.tasks.delete(id);
-      // fetchTasks();
     } catch (e) {
       console.error('Failed to delete task:', e);
       error.value = 'Failed to delete task.';
@@ -83,14 +74,15 @@ export const useTaskStore = defineStore('tasks', () => {
     }
   };
 
+
   // Computed Properties für das Dashboard
   const highPriorityTasksCount = computed(() => {
-    const _ = dataVersion.value; // Depend on the reactivity trigger
+    // Die reaktive Abhängigkeit von tasks.value ist ausreichend
     return tasks.value.filter((task: Task) => task.priority === 'high' && !task.completed).length;
   });
 
   const nextDueTask = computed(() => {
-    const _ = dataVersion.value; // Depend on the reactivity trigger
+    // Die reaktive Abhängigkeit von tasks.value ist ausreichend
     const upcomingTasks = tasks.value
       .filter((task: Task) => !task.completed && task.dueDate)
       .sort((a: Task, b: Task) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
@@ -117,6 +109,6 @@ export const useTaskStore = defineStore('tasks', () => {
     toggleTaskCompletion,
     highPriorityTasksCount,
     nextDueTask,
-    fetchTasks // expose fetchTasks falls manuelles Refreshen gebraucht wird
+    fetchTasks
   };
 });
