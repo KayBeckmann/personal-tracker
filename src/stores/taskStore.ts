@@ -8,8 +8,13 @@ export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const dataVersion = ref(0); // Reactivity trigger
 
   let liveTasksQuerySubscription: Subscription | null = null;
+
+  const forceRecompute = () => {
+    dataVersion.value++;
+  };
 
   const fetchTasks = () => {
     isLoading.value = true;
@@ -22,6 +27,7 @@ export const useTaskStore = defineStore('tasks', () => {
     liveTasksQuerySubscription = observable.subscribe({
       next: (result) => {
         tasks.value = result;
+        forceRecompute(); // Trigger reactivity when liveQuery updates
         isLoading.value = false;
       },
       error: (err) => {
@@ -79,10 +85,12 @@ export const useTaskStore = defineStore('tasks', () => {
 
   // Computed Properties für das Dashboard
   const highPriorityTasksCount = computed(() => {
+    const _ = dataVersion.value; // Depend on the reactivity trigger
     return tasks.value.filter((task: Task) => task.priority === 'high' && !task.completed).length;
   });
 
   const nextDueTask = computed(() => {
+    const _ = dataVersion.value; // Depend on the reactivity trigger
     const upcomingTasks = tasks.value
       .filter((task: Task) => !task.completed && task.dueDate)
       .sort((a: Task, b: Task) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());

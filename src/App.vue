@@ -6,15 +6,18 @@
     </main>
   </div>
   <footer>
-      <p>&copy; {{ new Date().getFullYear() }} Meine Produktivitäts-App</p>
-      <PwaReloadPrompt />
+    <p>&copy; {{ new Date().getFullYear() }} Meine Produktivitäts-App</p>
+    <PwaReloadPrompt />
 
-      <div>
-        Über einen 
+    <div>
+      <p>Über einen
         <a href="https://www.buymeacoffee.com/snuppedelua" target="_blank" rel="noopener noreferrer">Kaffee</a>
         würde ich mich freuen!
-      </div>
-    </footer>
+      </p>
+      <p>Bitcoin: 168gEr6cwWHPhcS6hXHiifcWuTuQYdLbtY</p>
+      <p>Diese Software steht unter der MIT License</p>
+    </div>
+  </footer>
 </template>
 
 <script setup lang="ts">

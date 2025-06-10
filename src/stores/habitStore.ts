@@ -27,9 +27,14 @@ export const useHabitStore = defineStore('habits', () => {
   const habitEntries = ref<HabitEntry[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const dataVersion = ref(0); // Reactivity trigger
 
   let liveHabitsQuerySubscription: Subscription | null = null;
   let liveHabitEntriesQuerySubscription: Subscription | null = null;
+
+  const forceRecompute = () => {
+    dataVersion.value++;
+  };
 
   const fetchAllData = () => {
     isLoading.value = true;
@@ -39,7 +44,7 @@ export const useHabitStore = defineStore('habits', () => {
         if (liveHabitsQuerySubscription) liveHabitsQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habits.orderBy('createdAt').toArray());
         liveHabitsQuerySubscription = obs.subscribe({
-          next: res => { habits.value = res; resolve(); },
+          next: res => { habits.value = res; forceRecompute(); resolve(); },
           error: err => {
             console.error('Dexie liveQuery error (habits):', err);
             error.value = "Failed to load habits";
@@ -51,7 +56,7 @@ export const useHabitStore = defineStore('habits', () => {
         if (liveHabitEntriesQuerySubscription) liveHabitEntriesQuerySubscription.unsubscribe();
         const obs = liveQuery(() => db.habitEntries.orderBy('date').toArray());
         liveHabitEntriesQuerySubscription = obs.subscribe({
-          next: res => { habitEntries.value = res; resolve(); },
+          next: res => { habitEntries.value = res; forceRecompute(); resolve(); },
           error: err => {
             console.error('Dexie liveQuery error (habitEntries):', err);
             error.value = "Failed to load habit entries";
@@ -236,6 +241,7 @@ export const useHabitStore = defineStore('habits', () => {
   }
 
   const habitsForTodayDashboard = computed((): HabitForDisplay[] => {
+    const _ = dataVersion.value; // Depend on the reactivity trigger
     const todayStr = getTodayDateString();
     return habits.value.map((habit) => {
       const completedToday = isHabitCompletedOnDate(habit.id!, todayStr);

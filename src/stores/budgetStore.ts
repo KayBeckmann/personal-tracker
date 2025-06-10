@@ -235,7 +235,31 @@ export const useBudgetStore = defineStore('budget', () => {
     };
   });
   
-  // ... (andere computed properties bleiben gleich) ...
+  const financialProjections = computed(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const daysInMonth = endOfMonth.getDate();
+    const dayOfMonth = now.getDate();
+
+    const monthTransactions = transactions.value.filter(t => {
+        const txDate = new Date(t.date);
+        return txDate >= startOfMonth && txDate <= endOfMonth;
+    });
+
+    const incomeThisMonth = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const expensesThisMonth = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    const projectedIncome = (incomeThisMonth / dayOfMonth) * daysInMonth;
+    const projectedExpenses = (expensesThisMonth / dayOfMonth) * daysInMonth;
+
+    return {
+        currentMonthIncome: incomeThisMonth,
+        currentMonthExpenses: expensesThisMonth,
+        projectedIncome: isNaN(projectedIncome) ? 0 : projectedIncome,
+        projectedExpenses: isNaN(projectedExpenses) ? 0 : projectedExpenses,
+    }
+  });
 
   return {
     accounts,
@@ -251,6 +275,9 @@ export const useBudgetStore = defineStore('budget', () => {
     fetchAll,
     totalBalance,
     expensePieChartData,
-    // ... (restliche computed properties exportieren) ...
+    projectedIncome: computed(() => financialProjections.value.projectedIncome),
+    projectedExpenses: computed(() => financialProjections.value.projectedExpenses),
+    currentMonthIncome: computed(() => financialProjections.value.currentMonthIncome),
+    currentMonthExpenses: computed(() => financialProjections.value.currentMonthExpenses),
   };
 });

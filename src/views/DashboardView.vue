@@ -16,7 +16,11 @@
           </div>
           <div v-if="nextDueTask && nextDueTask.dueDate" class="summary-item">
             <h4>Nächste fällige Aufgabe:</h4>
-            <p><strong>{{ nextDueTask.title }}</strong></p>
+            <div>
+              <input type="checkbox" :id="'task-checkbox-' + nextDueTask.id" :checked="nextDueTask.completed"
+                @change="toggleTaskCompletion(nextDueTask.id!)" />
+              <label :for="'task-checkbox-' + nextDueTask.id">{{ nextDueTask.title }}</label>
+            </div>
             <span>Fällig am: {{ new Date(nextDueTask.dueDate).toLocaleDateString('de-DE') }}</span>
           </div>
           <div v-else class="summary-item">
@@ -31,10 +35,12 @@
         </div>
         <div class="card-content">
           <ul v-if="habitsForTodayDashboard.length">
-            <li v-for="habit in habitsForTodayDashboard" :key="habit.id"
-                :class="{ completed: habit.completedToday }">
-              <i :class="['fa-solid', habit.completedToday ? 'fa-check-square' : 'fa-square']"></i>
-              {{ habit.name }} (Streak: {{ habit.streak }})
+            <li v-for="habit in habitsForTodayDashboard" :key="habit.id" :class="{ completed: habit.completedToday }">
+              <input type="checkbox" :id="'habit-checkbox-dash-' + habit.id" :checked="habit.completedToday"
+                @change="toggleHabitCompletion(habit.id!)" class="habit-checkbox" />
+              <label :for="'habit-checkbox-dash-' + habit.id">
+                {{ habit.name }} (Streak: {{ habit.streak }})
+              </label>
             </li>
           </ul>
           <p v-else>Für heute stehen keine Gewohnheiten an.</p>
@@ -46,12 +52,14 @@
           <h3><i class="fa-solid fa-chart-pie"></i> Ausgaben nach Kategorie</h3>
         </div>
         <div class="card-content">
-           <div v-if="hasExpenses" class="chart-container">
+          <div v-if="hasExpenses" class="chart-container">
             <Pie :data="expensePieChartData" :options="chartOptions" />
           </div>
           <p v-else>Keine Ausgaben vorhanden, um ein Diagramm anzuzeigen.</p>
         </div>
       </div>
+
+      <FinancialOverview />
 
     </div>
   </div>
@@ -65,22 +73,25 @@ import { useHabitStore } from '@/stores/habitStore';
 import { useBudgetStore } from '@/stores/budgetStore';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
+import FinancialOverview from '@/components/budget/FinancialOverview.vue';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
 // Task Store
 const taskStore = useTaskStore();
 const { highPriorityTasksCount, nextDueTask } = storeToRefs(taskStore);
+const { toggleTaskCompletion } = taskStore;
 
 // Habit Store
 const habitStore = useHabitStore();
 const { habitsForTodayDashboard } = storeToRefs(habitStore);
+const { toggleHabitCompletionForToday } = habitStore;
 
 // Budget Store
 const budgetStore = useBudgetStore();
 const { expensePieChartData, isLoading } = storeToRefs(budgetStore);
 
-const hasExpenses = computed(() => 
+const hasExpenses = computed(() =>
   expensePieChartData.value.datasets[0] && expensePieChartData.value.datasets[0].data.length > 0
 );
 
@@ -99,6 +110,10 @@ const chartOptions = {
     }
   }
 };
+
+const toggleHabitCompletion = (habitId: number) => {
+  toggleHabitCompletionForToday(habitId);
+}
 </script>
 
 <style scoped>
@@ -149,15 +164,17 @@ const chartOptions = {
 .habits-today-card li {
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
 }
 
-.habits-today-card li.completed {
+.habits-today-card li.completed label {
   text-decoration: line-through;
   color: var(--color-text-soft);
 }
 
-.habits-today-card li .fa-solid {
-  margin-right: 0.5rem;
+.habit-checkbox {
+  margin-right: 10px;
 }
 
 .habits-today-card li:last-child {
@@ -165,6 +182,6 @@ const chartOptions = {
 }
 
 .budget-chart-card .card-content {
-  min-height: 300px; 
+  min-height: 300px;
 }
 </style>
