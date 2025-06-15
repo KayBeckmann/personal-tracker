@@ -16,10 +16,6 @@
       <i class="fas fa-calendar-check"></i>
       <span class="nav-text">Gewohnheiten</span>
     </router-link>
-    <router-link to="/events" class="nav-item" active-class="active">
-      <i class="fas fa-calendar-day"></i>
-      <span class="nav-text">Ereignisse</span>
-    </router-link>
     <router-link to="/budget" class="nav-item" active-class="active">
       <i class="fas fa-wallet"></i>
       <span class="nav-text">Haushalt</span>
