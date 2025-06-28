@@ -22,14 +22,14 @@ const routes: Array<RouteRecordRaw> = [
   },
   // ANPASSUNG UND ERWEITERUNG DER NOTIZ-ROUTEN
   {
-    path: '/notes', // Hauptpfad für Notizen
-    name: 'NoteList', // Zeigt die Liste aller Notizen
-    component: NoteListView, // Unsere neue Listenansicht
-  },
-  {
     path: '/notes/new',
     name: 'NoteCreate', // Zum Erstellen einer neuen Notiz
     component: NoteEditView, // Verwendet die Editieransicht
+  },
+  {
+    path: '/notes', // Hauptpfad für Notizen
+    name: 'NoteList', // Zeigt die Liste aller Notizen
+    component: NoteListView, // Unsere neue Listenansicht
   },
   {
     path: '/notes/:id', // ':id' ist ein dynamischer Parameter für die Notiz-ID
