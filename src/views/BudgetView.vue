@@ -345,4 +345,15 @@ const paretoChartData = computed(() => {
     padding: 1rem;
   }
 }
+
+@media (max-width: 480px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+    /* Auf sehr kleinen Bildschirmen alles in einer Spalte */
+  }
+
+  .tabs button {
+    padding: 10px 15px;
+  }
+}
 </style>

@@ -153,4 +153,10 @@ const formatCurrency = (value: number) => {
   padding: 1rem 0;
   border-bottom: none;
 }
+
+@media (max-width: 480px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

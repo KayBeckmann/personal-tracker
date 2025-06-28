@@ -219,7 +219,27 @@ export const useHabitStore = defineStore('habits', () => {
         }
     }
 
+    if (habit.frequency === 'daily' && currentStreak > 0 && currentStreak % 10 === 0) {
+        showStreakNotification(habit.name, currentStreak);
+    }
+
     await updateHabit({ ...habit, streak: currentStreak, lastCompleted: lastCompletionDate });
+  };
+
+  const showStreakNotification = (habitName: string, streak: number) => {
+    if (!('Notification' in window)) {
+      console.log('This browser does not support desktop notification');
+      return;
+    }
+  
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        new Notification('Habit Streak!', {
+          body: `Congrats! You've kept the '${habitName}' habit for ${streak} days in a row!`,
+          icon: '/icons/icon-192x192.png'
+        });
+      }
+    });
   };
 
 

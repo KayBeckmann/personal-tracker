@@ -94,4 +94,15 @@ const handleCreateCategory = () => {
   color: var(--color-text-light);
   font-style: italic;
 }
+
+@media (max-width: 480px) {
+  .category-lists {
+    flex-direction: column;
+  }
+
+  .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 </style>
