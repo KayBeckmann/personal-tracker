@@ -28,6 +28,7 @@
         </div>
 
         <FinancialOverview />
+        <AccountBalances />
 
         <div class="card">
           <div class="card-header">
@@ -96,6 +97,7 @@ import TransactionForm from '@/components/budget/TransactionForm.vue';
 import AccountManager from '@/components/budget/AccountManager.vue';
 import CategoryManager from '@/components/budget/CategoryManager.vue';
 import FinancialOverview from '@/components/budget/FinancialOverview.vue';
+import AccountBalances from '@/components/budget/AccountBalances.vue';
 import LineChart from '@/components/budget/LineChart.vue';
 import ParetoChart from '@/components/budget/ParetoChart.vue';
 

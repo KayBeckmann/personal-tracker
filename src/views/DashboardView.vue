@@ -59,7 +59,8 @@
         </div>
       </div>
 
-      <FinancialOverview />
+            <FinancialOverview />
+      <AccountBalances />
 
     </div>
   </div>
@@ -74,6 +75,7 @@ import { useBudgetStore } from '@/stores/budgetStore';
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
 import FinancialOverview from '@/components/budget/FinancialOverview.vue';
+import AccountBalances from '@/components/budget/AccountBalances.vue';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
@@ -123,7 +125,7 @@ const toggleHabitCompletion = (habitId: number) => {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
