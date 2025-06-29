@@ -20,6 +20,10 @@
       <i class="fas fa-wallet"></i>
       <span class="nav-text">Haushalt</span>
     </router-link>
+    <router-link to="/settings" class="nav-item" active-class="active">
+      <i class="fas fa-cog"></i>
+      <span class="nav-text">Einstellungen</span>
+    </router-link>
   </nav>
 </template>
 

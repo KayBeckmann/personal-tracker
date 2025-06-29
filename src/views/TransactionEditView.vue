@@ -34,17 +34,14 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
-const handleFormSubmit = async (data: Transaction) => {
-  try {
-    // The form now emits a full Transaction object. We only need to ensure it has an ID for updating.
-    if (isEditMode.value && data.id) {
-        // The updateTransaction function expects the original ID and the new data.
-        await budgetStore.updateTransaction(data.id, data);
+const handleDelete = async (transactionId: number) => {
+  if (confirm('Are you sure you want to delete this transaction?')) {
+    try {
+      await budgetStore.deleteTransaction(transactionId);
+      await router.push('/budget');
+    } catch (error) {
+      console.error("Failed to delete transaction:", error);
     }
-    await router.push('/budget');
-  } catch (error) {
-    console.error("Failed to save transaction:", error);
-    // Optionally show an error message to the user.
   }
 };
 </script>
@@ -61,6 +58,7 @@ const handleFormSubmit = async (data: Transaction) => {
         :initial-data="transaction"
         @save="handleFormSubmit"
         @close="router.push('/budget')"
+        @delete="handleDelete"
       />
     </div>
   </div>

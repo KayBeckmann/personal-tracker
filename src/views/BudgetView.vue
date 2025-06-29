@@ -269,11 +269,12 @@ const paretoChartData = computed(() => {
 
 .list-group-item {
   display: flex;
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--color-border);
-  gap: 1rem;
+  gap: 0.5rem; /* Reduce gap slightly */
 }
 
 .list-group-item:last-child {
@@ -282,6 +283,11 @@ const paretoChartData = computed(() => {
 
 .tx-details {
   flex-grow: 1;
+  flex-basis: 100%; /* Ensure it takes full width on wrap */
+  display: flex; /* Use flexbox for internal alignment */
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .tx-date {
@@ -297,7 +303,7 @@ const paretoChartData = computed(() => {
 }
 
 .tx-amount {
-  min-width: 100px;
+  min-width: auto; /* Remove min-width */
   text-align: right;
   font-weight: bold;
 }
@@ -305,6 +311,17 @@ const paretoChartData = computed(() => {
 .tx-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .tx-details {
+    flex-direction: column; /* Stack details vertically */
+    align-items: flex-start;
+  }
+
+  .list-group-item {
+    align-items: flex-end; /* Align amount/actions to the end */
+  }
 }
 
 .text-success {

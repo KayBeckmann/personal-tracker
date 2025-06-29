@@ -7,7 +7,7 @@ const props = defineProps<{
   initialData?: Transaction | null;
 }>();
 
-const emit = defineEmits(['save', 'close']);
+const emit = defineEmits(['save', 'close', 'delete']);
 
 const budgetStore = useBudgetStore();
 
@@ -111,6 +111,7 @@ const handleDateChange = (event: Event) => {
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" @click="$emit('close')" class="btn btn-secondary">Cancel</button>
+        <button v-if="initialData" type="button" @click="$emit('delete', initialData.id)" class="btn btn-danger" style="margin-left: auto;">Delete</button>
     </div>
   </form>
 </template>
