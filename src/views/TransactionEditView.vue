@@ -44,6 +44,25 @@ const handleDelete = async (transactionId: number) => {
     }
   }
 };
+
+const handleFormSubmit = async (data: Transaction) => {
+  try {
+    if (isEditMode.value) {
+      // Stelle sicher, dass eine ID für das Update vorhanden ist
+      if (data.id === undefined) {
+        throw new Error("Transaktions-ID fehlt für das Update.");
+      }
+      await budgetStore.updateTransaction(data.id, data);
+    } else {
+      await budgetStore.addTransaction(data);
+    }
+    // Nach erfolgreichem Speichern zur Budget-Übersicht navigieren
+    router.push('/budget');
+  } catch (error) {
+    console.error("Fehler beim Speichern der Transaktion:", error);
+    // Optional: Zeige eine Fehlermeldung für den Benutzer an
+  }
+};
 </script>
 
 <template>
