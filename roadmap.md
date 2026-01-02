@@ -50,6 +50,16 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [ ] .env.example als Vorlage
 - [ ] Build- und Deploy-Skript
 
+### 1.8 Material Design
+- [ ] Material 3 (Material You) aktivieren
+- [ ] Farbschema mit Dynamic Color Support
+- [ ] Typografie nach Material Design Guidelines
+- [ ] Einheitliche Komponenten (Cards, Buttons, FABs, etc.)
+- [ ] Responsive Layouts (Compact, Medium, Expanded)
+- [ ] Motion & Animationen nach Material Specs
+- [ ] Icon-Set festlegen (Material Symbols)
+- [ ] Barrierefreiheit (Accessibility) sicherstellen
+
 ### Abschluss Meilenstein 1
 - [ ] Alle Tests durchlaufen
 - [ ] Git Commit: "feat: Grundgerüst mit Navigation, i18n, Theming und Docker"
