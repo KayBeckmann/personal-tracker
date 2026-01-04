@@ -22,9 +22,9 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Repository-Pattern implementieren
 
 ### 1.3 Navigation & Shell
-- [ ] Bottom Navigation / Drawer erstellen
-- [ ] Routing einrichten (go_router)
-- [ ] Modul-System (aktivieren/deaktivieren)
+- [x] Bottom Navigation / Drawer erstellen
+- [x] Routing einrichten (go_router)
+- [x] Modul-System (aktivieren/deaktivieren)
 
 ### 1.4 Mehrsprachigkeit
 - [ ] i18n Setup (flutter_localizations + intl)
