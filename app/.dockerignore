@@ -1,0 +1,43 @@
+# Flutter Build-Artefakte
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Tests
+test/
+integration_test/
+test_driver/
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Dokumentation (nicht für Production nötig)
+*.md
+!README.md
+
+# macOS
+.DS_Store
+
+# Android & iOS (nicht für Web nötig)
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

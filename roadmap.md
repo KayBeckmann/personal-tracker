@@ -44,11 +44,11 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] CI-Pipeline vorbereiten (GitHub Actions / GitLab CI)
 
 ### 1.7 Docker für Web-Frontend
-- [ ] Dockerfile für Flutter Web erstellen
-- [ ] docker-compose.yml anlegen
-- [ ] .env Datei für Konfiguration
-- [ ] .env.example als Vorlage
-- [ ] Build- und Deploy-Skript
+- [x] Dockerfile für Flutter Web erstellen
+- [x] docker-compose.yml anlegen
+- [x] .env Datei für Konfiguration
+- [x] .env.example als Vorlage
+- [x] Build- und Deploy-Skript
 
 ### 1.8 Material Design
 - [ ] Material 3 (Material You) aktivieren

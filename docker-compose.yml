@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Flutter Web Frontend
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        - PORT=${WEB_PORT:-80}
+    container_name: personal-tracker-web
+    ports:
+      - "${WEB_PORT:-80}:${WEB_PORT:-80}"
+    environment:
+      - PORT=${WEB_PORT:-80}
+    restart: unless-stopped
+    networks:
+      - personal-tracker-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${WEB_PORT:-80}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  personal-tracker-network:
+    driver: bridge
