@@ -27,9 +27,9 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Modul-System (aktivieren/deaktivieren)
 
 ### 1.4 Mehrsprachigkeit
-- [ ] i18n Setup (flutter_localizations + intl)
-- [ ] Sprachdateien für EN, DE anlegen
-- [ ] Sprachwechsel in Einstellungen
+- [x] i18n Setup (flutter_localizations + intl)
+- [x] Sprachdateien für EN, DE anlegen
+- [x] Sprachwechsel in Einstellungen
 
 ### 1.5 Theming
 - [ ] Light/Dark Theme definieren

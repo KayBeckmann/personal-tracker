@@ -1,0 +1,156 @@
+{
+  "@@locale": "de",
+
+  "appTitle": "Personal Tracker",
+  "@appTitle": {
+    "description": "Der Titel der Anwendung"
+  },
+
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Dashboard-Modul"
+  },
+
+  "finance": "Finanzen",
+  "@finance": {
+    "description": "Finanz-Modul"
+  },
+
+  "finances": "Finanzen",
+  "@finances": {
+    "description": "Plural von Finanzen"
+  },
+
+  "householdBook": "Haushaltsbuch",
+  "@householdBook": {
+    "description": "Haushaltsbuch"
+  },
+
+  "notes": "Notizen",
+  "@notes": {
+    "description": "Notizen-Modul"
+  },
+
+  "tasks": "Aufgaben",
+  "@tasks": {
+    "description": "Aufgaben-Modul"
+  },
+
+  "habits": "Gewohnheiten",
+  "@habits": {
+    "description": "Gewohnheiten-Modul"
+  },
+
+  "journal": "Journal",
+  "@journal": {
+    "description": "Journal-Modul"
+  },
+
+  "timeTracking": "Zeiterfassung",
+  "@timeTracking": {
+    "description": "Zeiterfassungs-Modul"
+  },
+
+  "settings": "Einstellungen",
+  "@settings": {
+    "description": "Einstellungen-Modul"
+  },
+
+  "design": "Design",
+  "@design": {
+    "description": "Design-Einstellungen"
+  },
+
+  "designSubtitle": "Theme, Farben, Schriftarten",
+  "@designSubtitle": {
+    "description": "Untertitel für Design-Einstellungen"
+  },
+
+  "language": "Sprache",
+  "@language": {
+    "description": "Sprache"
+  },
+
+  "languageSubtitle": "Anwendungssprache ändern",
+  "@languageSubtitle": {
+    "description": "Untertitel für Sprach-Einstellungen"
+  },
+
+  "modules": "Module",
+  "@modules": {
+    "description": "Module"
+  },
+
+  "modulesSubtitle": "Features aktivieren/deaktivieren",
+  "@modulesSubtitle": {
+    "description": "Untertitel für Modul-Einstellungen"
+  },
+
+  "about": "Über",
+  "@about": {
+    "description": "Über-Bereich"
+  },
+
+  "version": "Version {version}",
+  "@version": {
+    "description": "Versions-Anzeige",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0+1"
+      }
+    }
+  },
+
+  "german": "Deutsch",
+  "@german": {
+    "description": "Deutsche Sprache"
+  },
+
+  "english": "English",
+  "@english": {
+    "description": "Englische Sprache"
+  },
+
+  "selectLanguage": "Sprache auswählen",
+  "@selectLanguage": {
+    "description": "Dialog-Titel für Sprachauswahl"
+  },
+
+  "cancel": "Abbrechen",
+  "@cancel": {
+    "description": "Abbrechen-Button"
+  },
+
+  "ok": "OK",
+  "@ok": {
+    "description": "OK-Button"
+  },
+
+  "scaffoldBeingBuilt": "Grundgerüst wird aufgebaut",
+  "@scaffoldBeingBuilt": {
+    "description": "Text während Aufbau"
+  },
+
+  "milestone": "Meilenstein {number}",
+  "@milestone": {
+    "description": "Meilenstein-Anzeige",
+    "placeholders": {
+      "number": {
+        "type": "String",
+        "example": "1.1"
+      }
+    }
+  },
+
+  "implementedInMilestone": "Wird in Meilenstein {number} implementiert",
+  "@implementedInMilestone": {
+    "description": "Hinweis auf zukünftigen Meilenstein",
+    "placeholders": {
+      "number": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  }
+}

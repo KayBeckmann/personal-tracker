@@ -1,0 +1,22 @@
+# Localization configuration for flutter gen-l10n
+# https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization
+
+# ARB files directory
+arb-dir: lib/core/localization/l10n
+
+# Output directory for generated files
+output-dir: lib/core/localization/generated
+
+# Template ARB file (German as base)
+template-arb-file: app_de.arb
+
+# Output localization file
+output-localization-file: app_localizations.dart
+
+# Generate nullable getters
+nullable-getter: false
+
+# Preferred supported locales
+preferred-supported-locales:
+  - de
+  - en
