@@ -11,10 +11,10 @@ Nach Abschluss jedes Meilensteins:
 Basis-Infrastruktur für die gesamte Anwendung.
 
 ### 1.1 Projekt-Setup
-- [ ] Flutter-Projekt initialisieren
-- [ ] Projektstruktur festlegen (Clean Architecture)
-- [ ] Dependency Injection einrichten (z.B. get_it)
-- [ ] Linting & Code-Formatierung konfigurieren
+- [x] Flutter-Projekt initialisieren
+- [x] Projektstruktur festlegen (Clean Architecture)
+- [x] Dependency Injection einrichten (z.B. get_it)
+- [x] Linting & Code-Formatierung konfigurieren
 
 ### 1.2 Lokale Datenbank
 - [ ] SQLite/Drift Integration
