@@ -12,13 +12,35 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/settings/data/repositories/settings_repository_impl.dart'
+    as _i955;
+import '../../features/settings/domain/repositories/settings_repository.dart'
+    as _i674;
+import '../../features/settings/domain/usecases/get_theme_mode.dart' as _i867;
+import '../../features/settings/domain/usecases/set_theme_mode.dart' as _i743;
+import '../database/app_database.dart' as _i982;
+import '../database/daos/app_settings_dao.dart' as _i16;
+
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
   _i174.GetIt init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
   }) {
-    _i526.GetItHelper(this, environment, environmentFilter);
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    gh.lazySingleton<_i982.AppDatabase>(() => _i982.AppDatabase());
+    gh.lazySingleton<_i16.AppSettingsDao>(
+      () => _i16.AppSettingsDao(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i674.SettingsRepository>(
+      () => _i955.SettingsRepositoryImpl(gh<_i16.AppSettingsDao>()),
+    );
+    gh.factory<_i867.GetThemeMode>(
+      () => _i867.GetThemeMode(gh<_i674.SettingsRepository>()),
+    );
+    gh.factory<_i743.SetThemeMode>(
+      () => _i743.SetThemeMode(gh<_i674.SettingsRepository>()),
+    );
     return this;
   }
 }

@@ -17,9 +17,9 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Linting & Code-Formatierung konfigurieren
 
 ### 1.2 Lokale Datenbank
-- [ ] SQLite/Drift Integration
-- [ ] Basis-Datenbankschema erstellen
-- [ ] Repository-Pattern implementieren
+- [x] SQLite/Drift Integration
+- [x] Basis-Datenbankschema erstellen
+- [x] Repository-Pattern implementieren
 
 ### 1.3 Navigation & Shell
 - [ ] Bottom Navigation / Drawer erstellen
