@@ -4,7 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/di/injection.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/navigation/app_router.dart';
+import 'core/theme/app_theme.dart';
 import 'features/settings/domain/usecases/get_locale.dart';
+import 'features/settings/domain/usecases/get_theme_mode.dart';
 
 void main() {
   // Ensure Flutter bindings are initialized
@@ -26,14 +28,18 @@ class PersonalTrackerApp extends StatefulWidget {
 class _PersonalTrackerAppState extends State<PersonalTrackerApp> {
   final _router = getIt<AppRouter>();
   final _getLocale = getIt<GetLocale>();
+  final _getThemeMode = getIt<GetThemeMode>();
 
   Locale? _locale;
+  ThemeMode _themeMode = ThemeMode.system;
 
   @override
   void initState() {
     super.initState();
     _loadLocale();
     _watchLocaleChanges();
+    _loadThemeMode();
+    _watchThemeModeChanges();
   }
 
   Future<void> _loadLocale() async {
@@ -55,6 +61,37 @@ class _PersonalTrackerAppState extends State<PersonalTrackerApp> {
     });
   }
 
+  Future<void> _loadThemeMode() async {
+    final themeModeString = await _getThemeMode();
+    if (mounted) {
+      setState(() {
+        _themeMode = _parseThemeMode(themeModeString);
+      });
+    }
+  }
+
+  void _watchThemeModeChanges() {
+    _getThemeMode.watch().listen((themeModeString) {
+      if (mounted) {
+        setState(() {
+          _themeMode = _parseThemeMode(themeModeString);
+        });
+      }
+    });
+  }
+
+  ThemeMode _parseThemeMode(String themeModeString) {
+    switch (themeModeString) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'system':
+      default:
+        return ThemeMode.system;
+    }
+  }
+
   @override
   Widget build(BuildContext context) => MaterialApp.router(
         title: 'Personal Tracker',
@@ -70,20 +107,11 @@ class _PersonalTrackerAppState extends State<PersonalTrackerApp> {
         supportedLocales: AppLocalizations.supportedLocales,
         locale: _locale,
 
-        // Material 3 Design
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        ),
+        // Theming
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: _themeMode,
 
-        // Dark Theme
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.dark,
-          ),
-        ),
-
-        // Theme Mode: ThemeMode.system ist default, wird später aus Settings geladen
         // Router Configuration
         routerConfig: _router.router,
       );

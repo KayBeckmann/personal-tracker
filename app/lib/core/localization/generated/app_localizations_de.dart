@@ -48,6 +48,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get designSubtitle => 'Theme, Farben, Schriftarten';
 
   @override
+  String get theme => 'Farbschema';
+
+  @override
+  String get selectTheme => 'Farbschema auswählen';
+
+  @override
+  String get lightTheme => 'Hell';
+
+  @override
+  String get darkTheme => 'Dunkel';
+
+  @override
+  String get systemTheme => 'Systemeinstellung';
+
+  @override
   String get language => 'Sprache';
 
   @override

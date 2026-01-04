@@ -66,6 +66,31 @@
     "description": "Untertitel für Design-Einstellungen"
   },
 
+  "theme": "Farbschema",
+  "@theme": {
+    "description": "Theme/Farbschema"
+  },
+
+  "selectTheme": "Farbschema auswählen",
+  "@selectTheme": {
+    "description": "Dialog-Titel für Theme-Auswahl"
+  },
+
+  "lightTheme": "Hell",
+  "@lightTheme": {
+    "description": "Helles Theme"
+  },
+
+  "darkTheme": "Dunkel",
+  "@darkTheme": {
+    "description": "Dunkles Theme"
+  },
+
+  "systemTheme": "Systemeinstellung",
+  "@systemTheme": {
+    "description": "System-Theme (folgt Geräteeinstellung)"
+  },
+
   "language": "Sprache",
   "@language": {
     "description": "Sprache"

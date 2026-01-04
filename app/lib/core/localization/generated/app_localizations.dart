@@ -176,6 +176,36 @@ abstract class AppLocalizations {
   /// **'Theme, Farben, Schriftarten'**
   String get designSubtitle;
 
+  /// Theme/Farbschema
+  ///
+  /// In de, this message translates to:
+  /// **'Farbschema'**
+  String get theme;
+
+  /// Dialog-Titel für Theme-Auswahl
+  ///
+  /// In de, this message translates to:
+  /// **'Farbschema auswählen'**
+  String get selectTheme;
+
+  /// Helles Theme
+  ///
+  /// In de, this message translates to:
+  /// **'Hell'**
+  String get lightTheme;
+
+  /// Dunkles Theme
+  ///
+  /// In de, this message translates to:
+  /// **'Dunkel'**
+  String get darkTheme;
+
+  /// System-Theme (folgt Geräteeinstellung)
+  ///
+  /// In de, this message translates to:
+  /// **'Systemeinstellung'**
+  String get systemTheme;
+
   /// Sprache
   ///
   /// In de, this message translates to:

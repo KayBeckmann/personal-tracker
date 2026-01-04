@@ -32,9 +32,9 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Sprachwechsel in Einstellungen
 
 ### 1.5 Theming
-- [ ] Light/Dark Theme definieren
-- [ ] Theme-Wechsel implementieren
-- [ ] Persistierung der Einstellung
+- [x] Light/Dark Theme definieren
+- [x] Theme-Wechsel implementieren
+- [x] Persistierung der Einstellung
 
 ### 1.6 Test-Framework
 - [ ] Unit-Test Setup (flutter_test)
