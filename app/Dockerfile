@@ -19,14 +19,10 @@ RUN flutter gen-l10n
 RUN dart run build_runner build --delete-conflicting-outputs
 
 # Flutter Web Build erstellen (Release-Modus)
-RUN flutter build web --release --web-renderer canvaskit
+RUN flutter build web --release
 
 # Stage 2: Nginx Server für statische Dateien
 FROM nginx:alpine
-
-# Build-Argument für Port (Standard: 80)
-ARG PORT=80
-ENV PORT=${PORT}
 
 # Flutter Web Build von Build-Stage kopieren
 COPY --from=build /app/build/web /usr/share/nginx/html
@@ -36,10 +32,10 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Health-Check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:${PORT}/health || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
 
 # Port exponieren
-EXPOSE ${PORT}
+EXPOSE 80
 
 # Nginx starten
 CMD ["nginx", "-g", "daemon off;"]
