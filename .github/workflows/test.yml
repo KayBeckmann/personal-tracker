@@ -1,0 +1,75 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        working-directory: ./app
+        run: flutter pub get
+
+      - name: Verify Formatting
+        working-directory: ./app
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze Code
+        working-directory: ./app
+        run: flutter analyze
+
+      - name: Run Tests
+        working-directory: ./app
+        run: flutter test
+
+      - name: Generate Coverage
+        working-directory: ./app
+        run: flutter test --coverage
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./app/coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  integration-test:
+    name: Integration Tests
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        working-directory: ./app
+        run: flutter pub get
+
+      - name: Run Integration Tests
+        working-directory: ./app
+        run: flutter test integration_test/app_test.dart

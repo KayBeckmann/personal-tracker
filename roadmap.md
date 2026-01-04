@@ -37,11 +37,11 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Persistierung der Einstellung
 
 ### 1.6 Test-Framework
-- [ ] Unit-Test Setup (flutter_test)
-- [ ] Widget-Test Setup
-- [ ] Integration-Test Setup
-- [ ] Test-Coverage Konfiguration
-- [ ] CI-Pipeline vorbereiten (GitHub Actions / GitLab CI)
+- [x] Unit-Test Setup (flutter_test)
+- [x] Widget-Test Setup
+- [x] Integration-Test Setup
+- [x] Test-Coverage Konfiguration
+- [x] CI-Pipeline vorbereiten (GitHub Actions / GitLab CI)
 
 ### 1.7 Docker für Web-Frontend
 - [ ] Dockerfile für Flutter Web erstellen
