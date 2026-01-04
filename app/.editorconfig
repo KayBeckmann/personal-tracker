@@ -1,0 +1,37 @@
+# EditorConfig für Personal Tracker
+# https://editorconfig.org
+
+# Top-level EditorConfig file
+root = true
+
+# Defaults für alle Dateien
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Dart Dateien
+[*.dart]
+indent_style = space
+indent_size = 2
+max_line_length = 80
+
+# YAML Dateien (pubspec, analysis_options, etc.)
+[*.yaml]
+indent_style = space
+indent_size = 2
+
+# JSON Dateien
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Markdown Dateien
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Makefile (muss Tabs verwenden)
+[Makefile]
+indent_style = tab

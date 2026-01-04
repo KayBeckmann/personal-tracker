@@ -1,0 +1,8 @@
+# Code Generation Konfiguration
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        options:
+          # Bevorzuge relative Imports für bessere Code-Organisation
+          auto_register: true
