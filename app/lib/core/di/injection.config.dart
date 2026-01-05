@@ -12,7 +12,6 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
-import '../../features/finance/data/database/daos/budgets_dao.dart' as _i207;
 import '../../features/finance/data/repositories/account_repository_impl.dart'
     as _i460;
 import '../../features/finance/data/repositories/account_type_repository_impl.dart'
@@ -133,7 +132,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i255.UpdateAccount(gh<_i835.AccountRepository>()),
     );
     gh.lazySingleton<_i348.BudgetRepository>(
-      () => _i182.BudgetRepositoryImpl(gh<_i207.BudgetsDao>()),
+      () => _i182.BudgetRepositoryImpl(gh<_i982.AppDatabase>()),
     );
     gh.lazySingleton<_i761.TransactionRepository>(
       () => _i1045.TransactionRepositoryImpl(gh<_i982.AppDatabase>()),
