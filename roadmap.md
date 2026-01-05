@@ -70,11 +70,11 @@ Basis-Infrastruktur für die gesamte Anwendung.
 Komplettes Finanzmodul als erste Kernfunktion.
 
 ### 2.1 Datenmodell
-- [ ] Konten (Konto, Kontotyp)
-- [ ] Kategorien (mit Unterkategorien, Baumstruktur)
-- [ ] Buchungen (Einnahme/Ausgabe/Umbuchung)
-- [ ] Daueraufträge
-- [ ] Budgets
+- [x] Konten (Konto, Kontotyp)
+- [x] Kategorien (mit Unterkategorien, Baumstruktur)
+- [x] Buchungen (Einnahme/Ausgabe/Umbuchung)
+- [x] Daueraufträge
+- [x] Budgets
 
 ### 2.2 Konten
 - [ ] Kontenliste mit Gruppierung nach Typ
