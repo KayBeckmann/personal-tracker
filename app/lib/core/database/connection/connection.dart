@@ -14,6 +14,8 @@ QueryExecutor openConnection() {
     web: DriftWebOptions(
       sqlite3Wasm: Uri.parse('sqlite3.wasm'),
       driftWorker: Uri.parse('drift_worker.js'),
+      // Fallback auf IndexedDB wenn SharedArrayBuffers nicht verfügbar sind
+      // Dies ist langsamer, aber funktioniert in allen Browsern
     ),
   );
 }
