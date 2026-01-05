@@ -103,9 +103,9 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [ ] Automatische Buchungserstellung (Scheduler)
 
 ### 2.6 Budgets
-- [ ] Budget pro Kategorie/Konto anlegen
-- [ ] SOLL/IST Vergleich
-- [ ] Fortschrittsanzeige
+- [x] Budget pro Kategorie/Konto anlegen
+- [x] SOLL/IST Vergleich
+- [x] Fortschrittsanzeige
 
 ### 2.7 Finanzübersicht
 - [ ] Kapitalsumme anzeigen
