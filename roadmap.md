@@ -83,10 +83,10 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Saldo-Berechnung pro Konto & Gruppe
 
 ### 2.3 Kategorien
-- [ ] Baumansicht für Kategorien
-- [ ] Trennung Einnahmen/Ausgaben
-- [ ] Unterkategorien anlegen
-- [ ] Kategorien bearbeiten/löschen
+- [x] Baumansicht für Kategorien
+- [x] Trennung Einnahmen/Ausgaben
+- [x] Unterkategorien anlegen
+- [x] Kategorien bearbeiten/löschen
 
 ### 2.4 Buchungen
 - [ ] Buchungsliste mit Filtern (Datum, Kategorie, Empfänger, Freitext)
