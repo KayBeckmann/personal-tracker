@@ -273,4 +273,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectAccount => 'Please select an account';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get fromAccount => 'From Account';
+
+  @override
+  String get pleaseSelectCategory => 'Please select a category';
+
+  @override
+  String get pleaseEnterDescription => 'Please enter a description';
+
+  @override
+  String get pleaseEnterValidAmount => 'Please enter a valid amount';
+
+  @override
+  String get pleaseSelectToAccount => 'Please select a destination account';
+
+  @override
+  String get recurringTransactions => 'Recurring Transactions';
+
+  @override
+  String get createRecurringTransaction => 'Create Recurring Transaction';
+
+  @override
+  String get editRecurringTransaction => 'Edit Recurring Transaction';
+
+  @override
+  String get deleteRecurringTransaction => 'Delete Recurring Transaction';
+
+  @override
+  String get deleteRecurringTransactionConfirm =>
+      'Are you sure you want to delete this recurring transaction?';
+
+  @override
+  String get noRecurringTransactions => 'No recurring transactions yet';
+
+  @override
+  String get interval => 'Interval';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get biweekly => 'Every 2 weeks';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get quarterly => 'Quarterly';
+
+  @override
+  String get semiannually => 'Semi-annually';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get dayOfMonth => 'Day of Month';
+
+  @override
+  String get dayOfMonthHelper => 'Day of the month (1-31)';
+
+  @override
+  String get pleaseEnterDayOfMonth => 'Please enter a day';
+
+  @override
+  String get pleaseEnterValidDay => 'Please enter a valid day (1-31)';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get endDate => 'End Date';
+
+  @override
+  String get noEndDate => 'No end date';
+
+  @override
+  String get until => 'Until';
+
+  @override
+  String get nextDue => 'Next due';
+
+  @override
+  String get ended => 'Ended';
+
+  @override
+  String get active => 'Active';
 }

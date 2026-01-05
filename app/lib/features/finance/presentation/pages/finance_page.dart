@@ -4,6 +4,7 @@ import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/theme/components.dart';
 import 'accounts_page.dart';
 import 'categories_page.dart';
+import 'recurring_transactions_page.dart';
 import 'transactions_page.dart';
 
 /// Haushaltsbuch / Finanzen
@@ -45,6 +46,19 @@ class FinancePage extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const TransactionsPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right),
+          ),
+          InfoCard(
+            icon: Icons.repeat,
+            title: l10n.recurringTransactions,
+            subtitle: l10n.manageYourTransactions,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const RecurringTransactionsPage(),
                 ),
               );
             },

@@ -601,6 +601,192 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Bitte wählen Sie ein Konto aus'**
   String get pleaseSelectAccount;
+
+  /// No description provided for @expense.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgabe'**
+  String get expense;
+
+  /// No description provided for @fromAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Von Konto'**
+  String get fromAccount;
+
+  /// No description provided for @pleaseSelectCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte wählen Sie eine Kategorie aus'**
+  String get pleaseSelectCategory;
+
+  /// No description provided for @pleaseEnterDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie eine Beschreibung ein'**
+  String get pleaseEnterDescription;
+
+  /// No description provided for @pleaseEnterValidAmount.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie einen gültigen Betrag ein'**
+  String get pleaseEnterValidAmount;
+
+  /// No description provided for @pleaseSelectToAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte wählen Sie ein Zielkonto aus'**
+  String get pleaseSelectToAccount;
+
+  /// No description provided for @recurringTransactions.
+  ///
+  /// In de, this message translates to:
+  /// **'Daueraufträge'**
+  String get recurringTransactions;
+
+  /// No description provided for @createRecurringTransaction.
+  ///
+  /// In de, this message translates to:
+  /// **'Dauerauftrag erstellen'**
+  String get createRecurringTransaction;
+
+  /// No description provided for @editRecurringTransaction.
+  ///
+  /// In de, this message translates to:
+  /// **'Dauerauftrag bearbeiten'**
+  String get editRecurringTransaction;
+
+  /// No description provided for @deleteRecurringTransaction.
+  ///
+  /// In de, this message translates to:
+  /// **'Dauerauftrag löschen'**
+  String get deleteRecurringTransaction;
+
+  /// No description provided for @deleteRecurringTransactionConfirm.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchten Sie diesen Dauerauftrag wirklich löschen?'**
+  String get deleteRecurringTransactionConfirm;
+
+  /// No description provided for @noRecurringTransactions.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Daueraufträge'**
+  String get noRecurringTransactions;
+
+  /// No description provided for @interval.
+  ///
+  /// In de, this message translates to:
+  /// **'Intervall'**
+  String get interval;
+
+  /// No description provided for @daily.
+  ///
+  /// In de, this message translates to:
+  /// **'Täglich'**
+  String get daily;
+
+  /// No description provided for @weekly.
+  ///
+  /// In de, this message translates to:
+  /// **'Wöchentlich'**
+  String get weekly;
+
+  /// No description provided for @biweekly.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle 2 Wochen'**
+  String get biweekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In de, this message translates to:
+  /// **'Monatlich'**
+  String get monthly;
+
+  /// No description provided for @quarterly.
+  ///
+  /// In de, this message translates to:
+  /// **'Vierteljährlich'**
+  String get quarterly;
+
+  /// No description provided for @semiannually.
+  ///
+  /// In de, this message translates to:
+  /// **'Halbjährlich'**
+  String get semiannually;
+
+  /// No description provided for @yearly.
+  ///
+  /// In de, this message translates to:
+  /// **'Jährlich'**
+  String get yearly;
+
+  /// No description provided for @dayOfMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Tag des Monats'**
+  String get dayOfMonth;
+
+  /// No description provided for @dayOfMonthHelper.
+  ///
+  /// In de, this message translates to:
+  /// **'Tag des Monats (1-31)'**
+  String get dayOfMonthHelper;
+
+  /// No description provided for @pleaseEnterDayOfMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie einen Tag ein'**
+  String get pleaseEnterDayOfMonth;
+
+  /// No description provided for @pleaseEnterValidDay.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie einen gültigen Tag ein (1-31)'**
+  String get pleaseEnterValidDay;
+
+  /// No description provided for @startDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Startdatum'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Enddatum'**
+  String get endDate;
+
+  /// No description provided for @noEndDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Kein Enddatum'**
+  String get noEndDate;
+
+  /// No description provided for @until.
+  ///
+  /// In de, this message translates to:
+  /// **'Bis'**
+  String get until;
+
+  /// No description provided for @nextDue.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächste Fälligkeit'**
+  String get nextDue;
+
+  /// No description provided for @ended.
+  ///
+  /// In de, this message translates to:
+  /// **'Beendet'**
+  String get ended;
+
+  /// No description provided for @active.
+  ///
+  /// In de, this message translates to:
+  /// **'Aktiv'**
+  String get active;
 }
 
 class _AppLocalizationsDelegate

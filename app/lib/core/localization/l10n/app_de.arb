@@ -351,5 +351,38 @@
   "pleaseSelectAccount": "Bitte wählen Sie ein Konto aus",
   "@pleaseSelectAccount": {
     "description": "Validierungsmeldung für Kontoauswahl"
-  }
+  },
+
+  "expense": "Ausgabe",
+  "fromAccount": "Von Konto",
+  "pleaseSelectCategory": "Bitte wählen Sie eine Kategorie aus",
+  "pleaseEnterDescription": "Bitte geben Sie eine Beschreibung ein",
+  "pleaseEnterValidAmount": "Bitte geben Sie einen gültigen Betrag ein",
+  "pleaseSelectToAccount": "Bitte wählen Sie ein Zielkonto aus",
+
+  "recurringTransactions": "Daueraufträge",
+  "createRecurringTransaction": "Dauerauftrag erstellen",
+  "editRecurringTransaction": "Dauerauftrag bearbeiten",
+  "deleteRecurringTransaction": "Dauerauftrag löschen",
+  "deleteRecurringTransactionConfirm": "Möchten Sie diesen Dauerauftrag wirklich löschen?",
+  "noRecurringTransactions": "Noch keine Daueraufträge",
+  "interval": "Intervall",
+  "daily": "Täglich",
+  "weekly": "Wöchentlich",
+  "biweekly": "Alle 2 Wochen",
+  "monthly": "Monatlich",
+  "quarterly": "Vierteljährlich",
+  "semiannually": "Halbjährlich",
+  "yearly": "Jährlich",
+  "dayOfMonth": "Tag des Monats",
+  "dayOfMonthHelper": "Tag des Monats (1-31)",
+  "pleaseEnterDayOfMonth": "Bitte geben Sie einen Tag ein",
+  "pleaseEnterValidDay": "Bitte geben Sie einen gültigen Tag ein (1-31)",
+  "startDate": "Startdatum",
+  "endDate": "Enddatum",
+  "noEndDate": "Kein Enddatum",
+  "until": "Bis",
+  "nextDue": "Nächste Fälligkeit",
+  "ended": "Beendet",
+  "active": "Aktiv"
 }
