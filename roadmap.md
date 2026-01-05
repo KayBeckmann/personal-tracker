@@ -89,11 +89,11 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Kategorien bearbeiten/löschen
 
 ### 2.4 Buchungen
-- [ ] Buchungsliste mit Filtern (Datum, Kategorie, Empfänger, Freitext)
-- [ ] Buchung erstellen (alle Felder lt. Brainstorming)
-- [ ] Buchung bearbeiten/löschen
-- [ ] Zukünftige/geplante Buchungen
-- [ ] Als Vorlage speichern
+- [x] Buchungsliste mit Filtern (Datum, Kategorie, Empfänger, Freitext)
+- [x] Buchung erstellen (alle Felder lt. Brainstorming)
+- [x] Buchung bearbeiten/löschen
+- [x] Zukünftige/geplante Buchungen
+- [x] Als Vorlage speichern
 
 ### 2.5 Daueraufträge
 - [ ] Dauerauftragsliste
