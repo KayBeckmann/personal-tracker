@@ -1,6 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../features/finance/data/database/tables/account_types_table.dart';
+import '../../features/finance/data/database/tables/accounts_table.dart';
+import '../../features/finance/data/database/tables/budgets_table.dart';
+import '../../features/finance/data/database/tables/categories_table.dart';
+import '../../features/finance/data/database/tables/recurring_transactions_table.dart';
+import '../../features/finance/data/database/tables/transactions_table.dart';
 import 'connection/connection.dart';
 import 'tables/app_settings_table.dart';
 
@@ -13,7 +19,15 @@ part 'app_database.g.dart';
 /// Unterstützt sowohl native Plattformen (SQLite) als auch Web (IndexedDB).
 @lazySingleton
 @DriftDatabase(tables: [
+  // Core
   AppSettingsTable,
+  // Finance
+  AccountTypesTable,
+  AccountsTable,
+  CategoriesTable,
+  TransactionsTable,
+  RecurringTransactionsTable,
+  BudgetsTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
@@ -22,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -30,11 +44,15 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (Migrator m, int from, int to) async {
-          // Migrations werden hier implementiert, wenn schemaVersion erhöht wird
-          // Beispiel:
-          // if (from < 2) {
-          //   await m.addColumn(appSettings, appSettings.newColumn);
-          // }
+          // Migration von Schema 1 zu 2: Haushaltsbuch-Tabellen hinzufügen
+          if (from < 2) {
+            await m.createTable(accountTypesTable);
+            await m.createTable(accountsTable);
+            await m.createTable(categoriesTable);
+            await m.createTable(transactionsTable);
+            await m.createTable(recurringTransactionsTable);
+            await m.createTable(budgetsTable);
+          }
         },
       );
 }
