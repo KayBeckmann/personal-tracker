@@ -51,17 +51,17 @@ Basis-Infrastruktur für die gesamte Anwendung.
 - [x] Build- und Deploy-Skript
 
 ### 1.8 Material Design
-- [ ] Material 3 (Material You) aktivieren
-- [ ] Farbschema mit Dynamic Color Support
-- [ ] Typografie nach Material Design Guidelines
-- [ ] Einheitliche Komponenten (Cards, Buttons, FABs, etc.)
-- [ ] Responsive Layouts (Compact, Medium, Expanded)
-- [ ] Motion & Animationen nach Material Specs
-- [ ] Icon-Set festlegen (Material Symbols)
-- [ ] Barrierefreiheit (Accessibility) sicherstellen
+- [x] Material 3 (Material You) aktivieren
+- [x] Farbschema mit Dynamic Color Support
+- [x] Typografie nach Material Design Guidelines
+- [x] Einheitliche Komponenten (Cards, Buttons, FABs, etc.)
+- [x] Responsive Layouts (Compact, Medium, Expanded)
+- [x] Motion & Animationen nach Material Specs
+- [x] Icon-Set festlegen (Material Symbols)
+- [x] Barrierefreiheit (Accessibility) sicherstellen
 
 ### Abschluss Meilenstein 1
-- [ ] Alle Tests durchlaufen
+- [x] Alle Tests durchlaufen
 - [ ] Git Commit: "feat: Grundgerüst mit Navigation, i18n, Theming und Docker"
 
 ---

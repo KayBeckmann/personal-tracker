@@ -1,3 +1,4 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -93,26 +94,33 @@ class _PersonalTrackerAppState extends State<PersonalTrackerApp> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
-        title: 'Personal Tracker',
-        debugShowCheckedModeBanner: false,
+  Widget build(BuildContext context) {
+    // DynamicColorBuilder ermöglicht System-Farbschema auf Android 12+
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp.router(
+          title: 'Personal Tracker',
+          debugShowCheckedModeBanner: false,
 
-        // Localization
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: _locale,
+          // Localization
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: _locale,
 
-        // Theming
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: _themeMode,
+          // Theming mit Dynamic Color Support
+          theme: AppTheme.light(lightDynamic),
+          darkTheme: AppTheme.dark(darkDynamic),
+          themeMode: _themeMode,
 
-        // Router Configuration
-        routerConfig: _router.router,
-      );
+          // Router Configuration
+          routerConfig: _router.router,
+        );
+      },
+    );
+  }
 }
