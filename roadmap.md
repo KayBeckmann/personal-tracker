@@ -98,8 +98,8 @@ Komplettes Finanzmodul als erste Kernfunktion.
 ### 2.5 Daueraufträge
 - [x] Backend: DAO mit Fälligkeitsberechnung (täglich bis jährlich)
 - [x] Backend: Repository, Entities, Use Cases
-- [ ] UI: Dauerauftragsliste
-- [ ] UI: Dauerauftrag erstellen/bearbeiten/löschen
+- [x] UI: Dauerauftragsliste
+- [x] UI: Dauerauftrag erstellen/bearbeiten/löschen
 - [ ] Automatische Buchungserstellung (Scheduler)
 
 ### 2.6 Budgets
