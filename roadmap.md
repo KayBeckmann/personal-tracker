@@ -62,7 +62,7 @@ Basis-Infrastruktur für die gesamte Anwendung.
 
 ### Abschluss Meilenstein 1
 - [x] Alle Tests durchlaufen
-- [ ] Git Commit: "feat: Grundgerüst mit Navigation, i18n, Theming und Docker"
+- [x] Git Commit: "feat: Grundgerüst mit Navigation, i18n, Theming und Docker"
 
 ---
 
