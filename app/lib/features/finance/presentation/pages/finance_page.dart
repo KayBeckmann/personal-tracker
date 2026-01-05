@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/localization/generated/app_localizations.dart';
+import '../../../../core/theme/components.dart';
+import 'accounts_page.dart';
 
 /// Haushaltsbuch / Finanzen
 class FinancePage extends StatelessWidget {
@@ -12,20 +14,43 @@ class FinancePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.finances)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.account_balance_wallet, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              l10n.householdBook,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.implementedInMilestone('2')),
-          ],
-        ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          SectionHeader(
+            title: l10n.householdBook,
+            subtitle: l10n.manageYourFinances,
+          ),
+          const SizedBox(height: 16),
+          InfoCard(
+            icon: Icons.account_balance_wallet,
+            title: l10n.accounts,
+            subtitle: l10n.manageYourAccounts,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AccountsPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right),
+          ),
+          InfoCard(
+            icon: Icons.receipt_long,
+            title: l10n.transactions,
+            subtitle: l10n.implementedInMilestone('2.4'),
+          ),
+          InfoCard(
+            icon: Icons.category,
+            title: l10n.categories,
+            subtitle: l10n.implementedInMilestone('2.3'),
+          ),
+          InfoCard(
+            icon: Icons.savings,
+            title: l10n.budgets,
+            subtitle: l10n.implementedInMilestone('2.6'),
+          ),
+        ],
       ),
     );
   }

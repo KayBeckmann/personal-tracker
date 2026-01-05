@@ -47,6 +47,9 @@ dependencies:
   get_it: ^8.0.3
   injectable: ^2.6.2
 
+  # Utilities
+  equatable: ^2.0.7
+
   # Database
   drift: ^2.23.0
   drift_flutter: ^0.2.0

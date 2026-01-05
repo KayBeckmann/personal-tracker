@@ -289,6 +289,144 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Wird in Meilenstein {number} implementiert'**
   String implementedInMilestone(String number);
+
+  /// No description provided for @save.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get save;
+
+  /// No description provided for @delete.
+  ///
+  /// In de, this message translates to:
+  /// **'Löschen'**
+  String get delete;
+
+  /// No description provided for @manageYourFinances.
+  ///
+  /// In de, this message translates to:
+  /// **'Verwalten Sie Ihre Finanzen'**
+  String get manageYourFinances;
+
+  /// No description provided for @accounts.
+  ///
+  /// In de, this message translates to:
+  /// **'Konten'**
+  String get accounts;
+
+  /// No description provided for @transactions.
+  ///
+  /// In de, this message translates to:
+  /// **'Buchungen'**
+  String get transactions;
+
+  /// No description provided for @categories.
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorien'**
+  String get categories;
+
+  /// No description provided for @budgets.
+  ///
+  /// In de, this message translates to:
+  /// **'Budgets'**
+  String get budgets;
+
+  /// No description provided for @manageYourAccounts.
+  ///
+  /// In de, this message translates to:
+  /// **'Verwalten Sie Ihre Konten'**
+  String get manageYourAccounts;
+
+  /// No description provided for @noAccountsYet.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Konten'**
+  String get noAccountsYet;
+
+  /// No description provided for @createYourFirstAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Erstellen Sie Ihr erstes Konto, um zu beginnen'**
+  String get createYourFirstAccount;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Konto erstellen'**
+  String get createAccount;
+
+  /// No description provided for @editAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Konto bearbeiten'**
+  String get editAccount;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Konto löschen'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchten Sie das Konto \'{name}\' wirklich löschen?'**
+  String deleteAccountConfirmation(Object name);
+
+  /// No description provided for @name.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @accountType.
+  ///
+  /// In de, this message translates to:
+  /// **'Kontotyp'**
+  String get accountType;
+
+  /// No description provided for @initialBalance.
+  ///
+  /// In de, this message translates to:
+  /// **'Anfangssaldo'**
+  String get initialBalance;
+
+  /// No description provided for @includeInOverview.
+  ///
+  /// In de, this message translates to:
+  /// **'In Übersicht anzeigen'**
+  String get includeInOverview;
+
+  /// No description provided for @defaultAccount.
+  ///
+  /// In de, this message translates to:
+  /// **'Standard-Konto'**
+  String get defaultAccount;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie einen Namen ein'**
+  String get pleaseEnterName;
+
+  /// No description provided for @pleaseEnterAmount.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie einen Betrag ein'**
+  String get pleaseEnterAmount;
+
+  /// No description provided for @pleaseEnterValidNumber.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte geben Sie eine gültige Zahl ein'**
+  String get pleaseEnterValidNumber;
+
+  /// No description provided for @pleaseSelectAccountType.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte wählen Sie einen Kontotyp aus'**
+  String get pleaseSelectAccountType;
 }
 
 class _AppLocalizationsDelegate

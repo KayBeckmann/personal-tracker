@@ -109,4 +109,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String implementedInMilestone(String number) {
     return 'Will be implemented in Milestone $number';
   }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get manageYourFinances => 'Manage your finances';
+
+  @override
+  String get accounts => 'Accounts';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get manageYourAccounts => 'Manage your accounts';
+
+  @override
+  String get noAccountsYet => 'No accounts yet';
+
+  @override
+  String get createYourFirstAccount =>
+      'Create your first account to get started';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get editAccount => 'Edit Account';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String deleteAccountConfirmation(Object name) {
+    return 'Are you sure you want to delete the account \'$name\'?';
+  }
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get accountType => 'Account Type';
+
+  @override
+  String get initialBalance => 'Initial Balance';
+
+  @override
+  String get includeInOverview => 'Include in Overview';
+
+  @override
+  String get defaultAccount => 'Default Account';
+
+  @override
+  String get pleaseEnterName => 'Please enter a name';
+
+  @override
+  String get pleaseEnterAmount => 'Please enter an amount';
+
+  @override
+  String get pleaseEnterValidNumber => 'Please enter a valid number';
+
+  @override
+  String get pleaseSelectAccountType => 'Please select an account type';
 }

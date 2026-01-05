@@ -177,5 +177,29 @@
         "example": "2"
       }
     }
-  }
+  },
+
+  "save": "Speichern",
+  "delete": "Löschen",
+  "manageYourFinances": "Verwalten Sie Ihre Finanzen",
+  "accounts": "Konten",
+  "transactions": "Buchungen",
+  "categories": "Kategorien",
+  "budgets": "Budgets",
+  "manageYourAccounts": "Verwalten Sie Ihre Konten",
+  "noAccountsYet": "Noch keine Konten",
+  "createYourFirstAccount": "Erstellen Sie Ihr erstes Konto, um zu beginnen",
+  "createAccount": "Konto erstellen",
+  "editAccount": "Konto bearbeiten",
+  "deleteAccount": "Konto löschen",
+  "deleteAccountConfirmation": "Möchten Sie das Konto '{name}' wirklich löschen?",
+  "name": "Name",
+  "accountType": "Kontotyp",
+  "initialBalance": "Anfangssaldo",
+  "includeInOverview": "In Übersicht anzeigen",
+  "defaultAccount": "Standard-Konto",
+  "pleaseEnterName": "Bitte geben Sie einen Namen ein",
+  "pleaseEnterAmount": "Bitte geben Sie einen Betrag ein",
+  "pleaseEnterValidNumber": "Bitte geben Sie eine gültige Zahl ein",
+  "pleaseSelectAccountType": "Bitte wählen Sie einen Kontotyp aus"
 }

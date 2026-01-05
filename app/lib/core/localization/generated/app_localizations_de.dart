@@ -109,4 +109,76 @@ class AppLocalizationsDe extends AppLocalizations {
   String implementedInMilestone(String number) {
     return 'Wird in Meilenstein $number implementiert';
   }
+
+  @override
+  String get save => 'Speichern';
+
+  @override
+  String get delete => 'Löschen';
+
+  @override
+  String get manageYourFinances => 'Verwalten Sie Ihre Finanzen';
+
+  @override
+  String get accounts => 'Konten';
+
+  @override
+  String get transactions => 'Buchungen';
+
+  @override
+  String get categories => 'Kategorien';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get manageYourAccounts => 'Verwalten Sie Ihre Konten';
+
+  @override
+  String get noAccountsYet => 'Noch keine Konten';
+
+  @override
+  String get createYourFirstAccount =>
+      'Erstellen Sie Ihr erstes Konto, um zu beginnen';
+
+  @override
+  String get createAccount => 'Konto erstellen';
+
+  @override
+  String get editAccount => 'Konto bearbeiten';
+
+  @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String deleteAccountConfirmation(Object name) {
+    return 'Möchten Sie das Konto \'$name\' wirklich löschen?';
+  }
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get accountType => 'Kontotyp';
+
+  @override
+  String get initialBalance => 'Anfangssaldo';
+
+  @override
+  String get includeInOverview => 'In Übersicht anzeigen';
+
+  @override
+  String get defaultAccount => 'Standard-Konto';
+
+  @override
+  String get pleaseEnterName => 'Bitte geben Sie einen Namen ein';
+
+  @override
+  String get pleaseEnterAmount => 'Bitte geben Sie einen Betrag ein';
+
+  @override
+  String get pleaseEnterValidNumber => 'Bitte geben Sie eine gültige Zahl ein';
+
+  @override
+  String get pleaseSelectAccountType => 'Bitte wählen Sie einen Kontotyp aus';
 }
