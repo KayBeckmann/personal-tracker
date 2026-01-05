@@ -96,9 +96,11 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Als Vorlage speichern
 
 ### 2.5 Daueraufträge
-- [ ] Dauerauftragsliste
-- [ ] Dauerauftrag erstellen/bearbeiten/löschen
-- [ ] Automatische Buchungserstellung
+- [x] Backend: DAO mit Fälligkeitsberechnung (täglich bis jährlich)
+- [x] Backend: Repository, Entities, Use Cases
+- [ ] UI: Dauerauftragsliste
+- [ ] UI: Dauerauftrag erstellen/bearbeiten/löschen
+- [ ] Automatische Buchungserstellung (Scheduler)
 
 ### 2.6 Budgets
 - [ ] Budget pro Kategorie/Konto anlegen
