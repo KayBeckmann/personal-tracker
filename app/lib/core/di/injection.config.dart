@@ -18,6 +18,8 @@ import '../../features/finance/data/repositories/account_type_repository_impl.da
     as _i44;
 import '../../features/finance/data/repositories/category_repository_impl.dart'
     as _i816;
+import '../../features/finance/data/repositories/recurring_transaction_repository_impl.dart'
+    as _i1031;
 import '../../features/finance/data/repositories/transaction_repository_impl.dart'
     as _i1045;
 import '../../features/finance/domain/repositories/account_repository.dart'
@@ -26,14 +28,20 @@ import '../../features/finance/domain/repositories/account_type_repository.dart'
     as _i436;
 import '../../features/finance/domain/repositories/category_repository.dart'
     as _i228;
+import '../../features/finance/domain/repositories/recurring_transaction_repository.dart'
+    as _i943;
 import '../../features/finance/domain/repositories/transaction_repository.dart'
     as _i761;
 import '../../features/finance/domain/usecases/create_account.dart' as _i33;
 import '../../features/finance/domain/usecases/create_category.dart' as _i24;
+import '../../features/finance/domain/usecases/create_recurring_transaction.dart'
+    as _i401;
 import '../../features/finance/domain/usecases/create_transaction.dart'
     as _i781;
 import '../../features/finance/domain/usecases/delete_account.dart' as _i615;
 import '../../features/finance/domain/usecases/delete_category.dart' as _i878;
+import '../../features/finance/domain/usecases/delete_recurring_transaction.dart'
+    as _i977;
 import '../../features/finance/domain/usecases/delete_transaction.dart'
     as _i437;
 import '../../features/finance/domain/usecases/get_account_balance.dart'
@@ -45,6 +53,8 @@ import '../../features/finance/domain/usecases/get_all_account_types.dart'
 import '../../features/finance/domain/usecases/get_all_accounts.dart' as _i1053;
 import '../../features/finance/domain/usecases/get_all_categories.dart'
     as _i936;
+import '../../features/finance/domain/usecases/get_all_recurring_transactions.dart'
+    as _i479;
 import '../../features/finance/domain/usecases/get_all_transactions.dart'
     as _i1038;
 import '../../features/finance/domain/usecases/get_categories_by_type.dart'
@@ -57,6 +67,8 @@ import '../../features/finance/domain/usecases/get_subcategories.dart' as _i630;
 import '../../features/finance/domain/usecases/get_templates.dart' as _i589;
 import '../../features/finance/domain/usecases/update_account.dart' as _i255;
 import '../../features/finance/domain/usecases/update_category.dart' as _i511;
+import '../../features/finance/domain/usecases/update_recurring_transaction.dart'
+    as _i326;
 import '../../features/finance/domain/usecases/update_transaction.dart'
     as _i306;
 import '../../features/settings/data/repositories/settings_repository_impl.dart'
@@ -86,6 +98,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i835.AccountRepository>(
       () => _i460.AccountRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i943.RecurringTransactionRepository>(
+      () => _i1031.RecurringTransactionRepositoryImpl(gh<_i982.AppDatabase>()),
     );
     gh.lazySingleton<_i228.CategoryRepository>(
       () => _i816.CategoryRepositoryImpl(gh<_i982.AppDatabase>()),
@@ -155,6 +170,26 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i306.UpdateTransaction>(
       () => _i306.UpdateTransaction(gh<_i761.TransactionRepository>()),
+    );
+    gh.lazySingleton<_i401.CreateRecurringTransaction>(
+      () => _i401.CreateRecurringTransaction(
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i977.DeleteRecurringTransaction>(
+      () => _i977.DeleteRecurringTransaction(
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i479.GetAllRecurringTransactions>(
+      () => _i479.GetAllRecurringTransactions(
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i326.UpdateRecurringTransaction>(
+      () => _i326.UpdateRecurringTransaction(
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
     );
     gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i16.AppSettingsDao>()),

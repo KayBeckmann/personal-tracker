@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import '../../features/finance/data/database/daos/account_types_dao.dart';
 import '../../features/finance/data/database/daos/accounts_dao.dart';
 import '../../features/finance/data/database/daos/categories_dao.dart';
+import '../../features/finance/data/database/daos/recurring_transactions_dao.dart';
 import '../../features/finance/data/database/daos/transactions_dao.dart';
 import '../../features/finance/data/database/tables/account_types_table.dart';
 import '../../features/finance/data/database/tables/accounts_table.dart';
@@ -43,6 +44,7 @@ part 'app_database.g.dart';
     AccountsDao,
     CategoriesDao,
     TransactionsDao,
+    RecurringTransactionsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
