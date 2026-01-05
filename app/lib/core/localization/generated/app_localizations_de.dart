@@ -369,4 +369,51 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get active => 'Aktiv';
+
+  @override
+  String get noBudgetsYet => 'Noch keine Budgets';
+
+  @override
+  String get createYourFirstBudget =>
+      'Erstellen Sie Ihr erstes Budget zur Ausgabenkontrolle';
+
+  @override
+  String get createBudget => 'Budget erstellen';
+
+  @override
+  String get editBudget => 'Budget bearbeiten';
+
+  @override
+  String get deleteBudget => 'Budget löschen';
+
+  @override
+  String get deleteBudgetConfirmation =>
+      'Möchten Sie dieses Budget wirklich löschen?';
+
+  @override
+  String get actual => 'IST';
+
+  @override
+  String get budget => 'SOLL';
+
+  @override
+  String get remaining => 'Verbleibend';
+
+  @override
+  String get exceeded => 'Überschritten';
+
+  @override
+  String get period => 'Zeitraum';
+
+  @override
+  String get allCategories => 'Alle Kategorien';
+
+  @override
+  String get allAccounts => 'Alle Konten';
+
+  @override
+  String get budgetCategoryHelper => 'Leer lassen für alle Kategorien';
+
+  @override
+  String get budgetAccountHelper => 'Leer lassen für alle Konten';
 }

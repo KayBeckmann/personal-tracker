@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/theme/components.dart';
 import 'accounts_page.dart';
+import 'budgets_page.dart';
 import 'categories_page.dart';
 import 'recurring_transactions_page.dart';
 import 'transactions_page.dart';
@@ -80,7 +81,15 @@ class FinancePage extends StatelessWidget {
           InfoCard(
             icon: Icons.savings,
             title: l10n.budgets,
-            subtitle: l10n.implementedInMilestone('2.6'),
+            subtitle: l10n.manageYourFinances,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const BudgetsPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right),
           ),
         ],
       ),

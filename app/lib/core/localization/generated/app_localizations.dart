@@ -787,6 +787,96 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Aktiv'**
   String get active;
+
+  /// No description provided for @noBudgetsYet.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Budgets'**
+  String get noBudgetsYet;
+
+  /// No description provided for @createYourFirstBudget.
+  ///
+  /// In de, this message translates to:
+  /// **'Erstellen Sie Ihr erstes Budget zur Ausgabenkontrolle'**
+  String get createYourFirstBudget;
+
+  /// No description provided for @createBudget.
+  ///
+  /// In de, this message translates to:
+  /// **'Budget erstellen'**
+  String get createBudget;
+
+  /// No description provided for @editBudget.
+  ///
+  /// In de, this message translates to:
+  /// **'Budget bearbeiten'**
+  String get editBudget;
+
+  /// No description provided for @deleteBudget.
+  ///
+  /// In de, this message translates to:
+  /// **'Budget löschen'**
+  String get deleteBudget;
+
+  /// No description provided for @deleteBudgetConfirmation.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchten Sie dieses Budget wirklich löschen?'**
+  String get deleteBudgetConfirmation;
+
+  /// No description provided for @actual.
+  ///
+  /// In de, this message translates to:
+  /// **'IST'**
+  String get actual;
+
+  /// No description provided for @budget.
+  ///
+  /// In de, this message translates to:
+  /// **'SOLL'**
+  String get budget;
+
+  /// No description provided for @remaining.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbleibend'**
+  String get remaining;
+
+  /// No description provided for @exceeded.
+  ///
+  /// In de, this message translates to:
+  /// **'Überschritten'**
+  String get exceeded;
+
+  /// No description provided for @period.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeitraum'**
+  String get period;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Kategorien'**
+  String get allCategories;
+
+  /// No description provided for @allAccounts.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Konten'**
+  String get allAccounts;
+
+  /// No description provided for @budgetCategoryHelper.
+  ///
+  /// In de, this message translates to:
+  /// **'Leer lassen für alle Kategorien'**
+  String get budgetCategoryHelper;
+
+  /// No description provided for @budgetAccountHelper.
+  ///
+  /// In de, this message translates to:
+  /// **'Leer lassen für alle Konten'**
+  String get budgetAccountHelper;
 }
 
 class _AppLocalizationsDelegate

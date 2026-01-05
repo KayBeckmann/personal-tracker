@@ -12,10 +12,13 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/finance/data/database/daos/budgets_dao.dart' as _i207;
 import '../../features/finance/data/repositories/account_repository_impl.dart'
     as _i460;
 import '../../features/finance/data/repositories/account_type_repository_impl.dart'
     as _i44;
+import '../../features/finance/data/repositories/budget_repository_impl.dart'
+    as _i182;
 import '../../features/finance/data/repositories/category_repository_impl.dart'
     as _i816;
 import '../../features/finance/data/repositories/recurring_transaction_repository_impl.dart'
@@ -26,6 +29,8 @@ import '../../features/finance/domain/repositories/account_repository.dart'
     as _i835;
 import '../../features/finance/domain/repositories/account_type_repository.dart'
     as _i436;
+import '../../features/finance/domain/repositories/budget_repository.dart'
+    as _i348;
 import '../../features/finance/domain/repositories/category_repository.dart'
     as _i228;
 import '../../features/finance/domain/repositories/recurring_transaction_repository.dart'
@@ -33,12 +38,14 @@ import '../../features/finance/domain/repositories/recurring_transaction_reposit
 import '../../features/finance/domain/repositories/transaction_repository.dart'
     as _i761;
 import '../../features/finance/domain/usecases/create_account.dart' as _i33;
+import '../../features/finance/domain/usecases/create_budget.dart' as _i984;
 import '../../features/finance/domain/usecases/create_category.dart' as _i24;
 import '../../features/finance/domain/usecases/create_recurring_transaction.dart'
     as _i401;
 import '../../features/finance/domain/usecases/create_transaction.dart'
     as _i781;
 import '../../features/finance/domain/usecases/delete_account.dart' as _i615;
+import '../../features/finance/domain/usecases/delete_budget.dart' as _i160;
 import '../../features/finance/domain/usecases/delete_category.dart' as _i878;
 import '../../features/finance/domain/usecases/delete_recurring_transaction.dart'
     as _i977;
@@ -51,6 +58,7 @@ import '../../features/finance/domain/usecases/get_accounts_grouped_by_type.dart
 import '../../features/finance/domain/usecases/get_all_account_types.dart'
     as _i107;
 import '../../features/finance/domain/usecases/get_all_accounts.dart' as _i1053;
+import '../../features/finance/domain/usecases/get_all_budgets.dart' as _i776;
 import '../../features/finance/domain/usecases/get_all_categories.dart'
     as _i936;
 import '../../features/finance/domain/usecases/get_all_recurring_transactions.dart'
@@ -66,6 +74,7 @@ import '../../features/finance/domain/usecases/get_planned_transactions.dart'
 import '../../features/finance/domain/usecases/get_subcategories.dart' as _i630;
 import '../../features/finance/domain/usecases/get_templates.dart' as _i589;
 import '../../features/finance/domain/usecases/update_account.dart' as _i255;
+import '../../features/finance/domain/usecases/update_budget.dart' as _i108;
 import '../../features/finance/domain/usecases/update_category.dart' as _i511;
 import '../../features/finance/domain/usecases/update_recurring_transaction.dart'
     as _i326;
@@ -123,8 +132,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i255.UpdateAccount>(
       () => _i255.UpdateAccount(gh<_i835.AccountRepository>()),
     );
+    gh.lazySingleton<_i348.BudgetRepository>(
+      () => _i182.BudgetRepositoryImpl(gh<_i207.BudgetsDao>()),
+    );
     gh.lazySingleton<_i761.TransactionRepository>(
       () => _i1045.TransactionRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i984.CreateBudget>(
+      () => _i984.CreateBudget(gh<_i348.BudgetRepository>()),
+    );
+    gh.lazySingleton<_i160.DeleteBudget>(
+      () => _i160.DeleteBudget(gh<_i348.BudgetRepository>()),
+    );
+    gh.lazySingleton<_i776.GetAllBudgets>(
+      () => _i776.GetAllBudgets(gh<_i348.BudgetRepository>()),
+    );
+    gh.lazySingleton<_i108.UpdateBudget>(
+      () => _i108.UpdateBudget(gh<_i348.BudgetRepository>()),
     );
     gh.factory<_i107.GetAllAccountTypes>(
       () => _i107.GetAllAccountTypes(gh<_i436.AccountTypeRepository>()),

@@ -4939,6 +4939,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final RecurringTransactionsDao recurringTransactionsDao =
       RecurringTransactionsDao(this as AppDatabase);
+  late final BudgetsDao budgetsDao = BudgetsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

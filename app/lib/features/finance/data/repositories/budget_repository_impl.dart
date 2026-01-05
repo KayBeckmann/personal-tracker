@@ -1,0 +1,103 @@
+import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/database/app_database.dart';
+import '../../domain/entities/budget.dart';
+import '../../domain/repositories/budget_repository.dart';
+import '../database/daos/budgets_dao.dart';
+import '../database/tables/budgets_table.dart';
+import '../mappers/budget_mapper.dart';
+
+/// Implementierung des Budget-Repositories
+@LazySingleton(as: BudgetRepository)
+class BudgetRepositoryImpl implements BudgetRepository {
+  BudgetRepositoryImpl(this._budgetsDao);
+
+  final BudgetsDao _budgetsDao;
+
+  @override
+  Future<List<Budget>> getAllBudgets() async {
+    final budgets = await _budgetsDao.getAllBudgets();
+    final result = <Budget>[];
+
+    for (final budgetData in budgets) {
+      final actualSpending = await _budgetsDao.getActualSpending(budgetData);
+      result.add(BudgetMapper.toEntity(budgetData, actualSpending: actualSpending));
+    }
+
+    return result;
+  }
+
+  @override
+  Stream<List<Budget>> watchAllBudgets() {
+    return _budgetsDao.watchAllBudgets().asyncMap((budgets) async {
+      final result = <Budget>[];
+
+      for (final budgetData in budgets) {
+        final actualSpending = await _budgetsDao.getActualSpending(budgetData);
+        result.add(
+          BudgetMapper.toEntity(budgetData, actualSpending: actualSpending),
+        );
+      }
+
+      return result;
+    });
+  }
+
+  @override
+  Future<Budget?> getBudgetById(int id) async {
+    final budgetData = await _budgetsDao.getBudgetById(id);
+    if (budgetData == null) return null;
+
+    final actualSpending = await _budgetsDao.getActualSpending(budgetData);
+    return BudgetMapper.toEntity(budgetData, actualSpending: actualSpending);
+  }
+
+  @override
+  Stream<Budget?> watchBudgetById(int id) {
+    return _budgetsDao.watchBudgetById(id).asyncMap((budgetData) async {
+      if (budgetData == null) return null;
+
+      final actualSpending = await _budgetsDao.getActualSpending(budgetData);
+      return BudgetMapper.toEntity(budgetData, actualSpending: actualSpending);
+    });
+  }
+
+  @override
+  Future<int> createBudget({
+    required String name,
+    int? categoryId,
+    int? accountId,
+    required double amount,
+    String currency = 'EUR',
+    required BudgetPeriod period,
+    required DateTime startDate,
+    DateTime? endDate,
+    bool isActive = true,
+  }) {
+    return _budgetsDao.createBudget(
+      BudgetsTableCompanion.insert(
+        name: name,
+        categoryId: Value(categoryId),
+        accountId: Value(accountId),
+        amount: amount,
+        currency: Value(currency),
+        period: period,
+        startDate: startDate,
+        endDate: Value(endDate),
+        isActive: Value(isActive),
+      ),
+    );
+  }
+
+  @override
+  Future<void> updateBudget(Budget budget) async {
+    final budgetData = BudgetMapper.toData(budget);
+    await _budgetsDao.updateBudget(budgetData);
+  }
+
+  @override
+  Future<void> deleteBudget(int id) async {
+    await _budgetsDao.deleteBudget(id);
+  }
+}

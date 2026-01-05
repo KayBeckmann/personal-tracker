@@ -384,5 +384,21 @@
   "until": "Bis",
   "nextDue": "Nächste Fälligkeit",
   "ended": "Beendet",
-  "active": "Aktiv"
+  "active": "Aktiv",
+
+  "noBudgetsYet": "Noch keine Budgets",
+  "createYourFirstBudget": "Erstellen Sie Ihr erstes Budget zur Ausgabenkontrolle",
+  "createBudget": "Budget erstellen",
+  "editBudget": "Budget bearbeiten",
+  "deleteBudget": "Budget löschen",
+  "deleteBudgetConfirmation": "Möchten Sie dieses Budget wirklich löschen?",
+  "actual": "IST",
+  "budget": "SOLL",
+  "remaining": "Verbleibend",
+  "exceeded": "Überschritten",
+  "period": "Zeitraum",
+  "allCategories": "Alle Kategorien",
+  "allAccounts": "Alle Konten",
+  "budgetCategoryHelper": "Leer lassen für alle Kategorien",
+  "budgetAccountHelper": "Leer lassen für alle Konten"
 }
