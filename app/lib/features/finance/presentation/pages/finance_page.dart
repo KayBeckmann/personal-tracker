@@ -4,6 +4,7 @@ import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/theme/components.dart';
 import 'accounts_page.dart';
 import 'categories_page.dart';
+import 'transactions_page.dart';
 
 /// Haushaltsbuch / Finanzen
 class FinancePage extends StatelessWidget {
@@ -39,7 +40,15 @@ class FinancePage extends StatelessWidget {
           InfoCard(
             icon: Icons.receipt_long,
             title: l10n.transactions,
-            subtitle: l10n.implementedInMilestone('2.4'),
+            subtitle: l10n.manageYourTransactions,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const TransactionsPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right),
           ),
           InfoCard(
             icon: Icons.category,

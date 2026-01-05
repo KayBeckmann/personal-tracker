@@ -505,6 +505,102 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Einnahmen'**
   String get income;
+
+  /// Untertitel für Buchungen
+  ///
+  /// In de, this message translates to:
+  /// **'Verwalten Sie Ihre Buchungen'**
+  String get manageYourTransactions;
+
+  /// Button zum Erstellen einer Buchung
+  ///
+  /// In de, this message translates to:
+  /// **'Buchung erstellen'**
+  String get createTransaction;
+
+  /// Dialog-Titel zum Bearbeiten einer Buchung
+  ///
+  /// In de, this message translates to:
+  /// **'Buchung bearbeiten'**
+  String get editTransaction;
+
+  /// Dialog-Titel zum Löschen einer Buchung
+  ///
+  /// In de, this message translates to:
+  /// **'Buchung löschen'**
+  String get deleteTransaction;
+
+  /// Bestätigungsdialog zum Löschen einer Buchung
+  ///
+  /// In de, this message translates to:
+  /// **'Möchten Sie diese Buchung wirklich löschen?'**
+  String get deleteTransactionConfirmation;
+
+  /// Leerer Zustand bei Buchungen
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Buchungen'**
+  String get noTransactionsYet;
+
+  /// Hinweistext für erste Buchung
+  ///
+  /// In de, this message translates to:
+  /// **'Erstellen Sie Ihre erste Buchung, um zu beginnen'**
+  String get createYourFirstTransaction;
+
+  /// Label für Betrag
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag'**
+  String get amount;
+
+  /// Label für Konto
+  ///
+  /// In de, this message translates to:
+  /// **'Konto'**
+  String get account;
+
+  /// Label für Zielkonto bei Umbuchungen
+  ///
+  /// In de, this message translates to:
+  /// **'Zielkonto'**
+  String get toAccount;
+
+  /// Label für Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie'**
+  String get category;
+
+  /// Label für Datum
+  ///
+  /// In de, this message translates to:
+  /// **'Datum'**
+  String get date;
+
+  /// Label für Zahlungsempfänger
+  ///
+  /// In de, this message translates to:
+  /// **'Empfänger'**
+  String get payee;
+
+  /// Label für Beschreibung
+  ///
+  /// In de, this message translates to:
+  /// **'Beschreibung'**
+  String get description;
+
+  /// Label für Umbuchung
+  ///
+  /// In de, this message translates to:
+  /// **'Umbuchung'**
+  String get transfer;
+
+  /// Validierungsmeldung für Kontoauswahl
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte wählen Sie ein Konto aus'**
+  String get pleaseSelectAccount;
 }
 
 class _AppLocalizationsDelegate

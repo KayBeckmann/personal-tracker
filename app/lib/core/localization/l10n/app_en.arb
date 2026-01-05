@@ -70,5 +70,22 @@
   "icon": "Icon",
   "color": "Color",
   "expenses": "Expenses",
-  "income": "Income"
+  "income": "Income",
+
+  "manageYourTransactions": "Manage your transactions",
+  "createTransaction": "Create Transaction",
+  "editTransaction": "Edit Transaction",
+  "deleteTransaction": "Delete Transaction",
+  "deleteTransactionConfirmation": "Are you sure you want to delete this transaction?",
+  "noTransactionsYet": "No transactions yet",
+  "createYourFirstTransaction": "Create your first transaction to get started",
+  "amount": "Amount",
+  "account": "Account",
+  "toAccount": "To Account",
+  "category": "Category",
+  "date": "Date",
+  "payee": "Payee",
+  "description": "Description",
+  "transfer": "Transfer",
+  "pleaseSelectAccount": "Please select an account"
 }

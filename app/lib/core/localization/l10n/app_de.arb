@@ -271,5 +271,85 @@
   "income": "Einnahmen",
   "@income": {
     "description": "Einnahmen-Tab"
+  },
+
+  "manageYourTransactions": "Verwalten Sie Ihre Buchungen",
+  "@manageYourTransactions": {
+    "description": "Untertitel für Buchungen"
+  },
+
+  "createTransaction": "Buchung erstellen",
+  "@createTransaction": {
+    "description": "Button zum Erstellen einer Buchung"
+  },
+
+  "editTransaction": "Buchung bearbeiten",
+  "@editTransaction": {
+    "description": "Dialog-Titel zum Bearbeiten einer Buchung"
+  },
+
+  "deleteTransaction": "Buchung löschen",
+  "@deleteTransaction": {
+    "description": "Dialog-Titel zum Löschen einer Buchung"
+  },
+
+  "deleteTransactionConfirmation": "Möchten Sie diese Buchung wirklich löschen?",
+  "@deleteTransactionConfirmation": {
+    "description": "Bestätigungsdialog zum Löschen einer Buchung"
+  },
+
+  "noTransactionsYet": "Noch keine Buchungen",
+  "@noTransactionsYet": {
+    "description": "Leerer Zustand bei Buchungen"
+  },
+
+  "createYourFirstTransaction": "Erstellen Sie Ihre erste Buchung, um zu beginnen",
+  "@createYourFirstTransaction": {
+    "description": "Hinweistext für erste Buchung"
+  },
+
+  "amount": "Betrag",
+  "@amount": {
+    "description": "Label für Betrag"
+  },
+
+  "account": "Konto",
+  "@account": {
+    "description": "Label für Konto"
+  },
+
+  "toAccount": "Zielkonto",
+  "@toAccount": {
+    "description": "Label für Zielkonto bei Umbuchungen"
+  },
+
+  "category": "Kategorie",
+  "@category": {
+    "description": "Label für Kategorie"
+  },
+
+  "date": "Datum",
+  "@date": {
+    "description": "Label für Datum"
+  },
+
+  "payee": "Empfänger",
+  "@payee": {
+    "description": "Label für Zahlungsempfänger"
+  },
+
+  "description": "Beschreibung",
+  "@description": {
+    "description": "Label für Beschreibung"
+  },
+
+  "transfer": "Umbuchung",
+  "@transfer": {
+    "description": "Label für Umbuchung"
+  },
+
+  "pleaseSelectAccount": "Bitte wählen Sie ein Konto aus",
+  "@pleaseSelectAccount": {
+    "description": "Validierungsmeldung für Kontoauswahl"
   }
 }

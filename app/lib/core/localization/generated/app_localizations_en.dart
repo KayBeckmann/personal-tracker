@@ -223,4 +223,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get income => 'Income';
+
+  @override
+  String get manageYourTransactions => 'Manage your transactions';
+
+  @override
+  String get createTransaction => 'Create Transaction';
+
+  @override
+  String get editTransaction => 'Edit Transaction';
+
+  @override
+  String get deleteTransaction => 'Delete Transaction';
+
+  @override
+  String get deleteTransactionConfirmation =>
+      'Are you sure you want to delete this transaction?';
+
+  @override
+  String get noTransactionsYet => 'No transactions yet';
+
+  @override
+  String get createYourFirstTransaction =>
+      'Create your first transaction to get started';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get toAccount => 'To Account';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get payee => 'Payee';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get transfer => 'Transfer';
+
+  @override
+  String get pleaseSelectAccount => 'Please select an account';
 }

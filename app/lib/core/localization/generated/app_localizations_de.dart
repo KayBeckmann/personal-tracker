@@ -223,4 +223,54 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get income => 'Einnahmen';
+
+  @override
+  String get manageYourTransactions => 'Verwalten Sie Ihre Buchungen';
+
+  @override
+  String get createTransaction => 'Buchung erstellen';
+
+  @override
+  String get editTransaction => 'Buchung bearbeiten';
+
+  @override
+  String get deleteTransaction => 'Buchung löschen';
+
+  @override
+  String get deleteTransactionConfirmation =>
+      'Möchten Sie diese Buchung wirklich löschen?';
+
+  @override
+  String get noTransactionsYet => 'Noch keine Buchungen';
+
+  @override
+  String get createYourFirstTransaction =>
+      'Erstellen Sie Ihre erste Buchung, um zu beginnen';
+
+  @override
+  String get amount => 'Betrag';
+
+  @override
+  String get account => 'Konto';
+
+  @override
+  String get toAccount => 'Zielkonto';
+
+  @override
+  String get category => 'Kategorie';
+
+  @override
+  String get date => 'Datum';
+
+  @override
+  String get payee => 'Empfänger';
+
+  @override
+  String get description => 'Beschreibung';
+
+  @override
+  String get transfer => 'Umbuchung';
+
+  @override
+  String get pleaseSelectAccount => 'Bitte wählen Sie ein Konto aus';
 }
