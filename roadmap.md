@@ -77,10 +77,10 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Budgets
 
 ### 2.2 Konten
-- [ ] Kontenliste mit Gruppierung nach Typ
-- [ ] Konto erstellen/bearbeiten/löschen
-- [ ] Kontotypen verwalten
-- [ ] Saldo-Berechnung pro Konto & Gruppe
+- [x] Kontenliste mit Gruppierung nach Typ
+- [x] Konto erstellen/bearbeiten/löschen
+- [x] Kontotypen verwalten
+- [x] Saldo-Berechnung pro Konto & Gruppe
 
 ### 2.3 Kategorien
 - [ ] Baumansicht für Kategorien
