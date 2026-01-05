@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../features/finance/data/database/daos/account_types_dao.dart';
 import '../../features/finance/data/database/daos/accounts_dao.dart';
+import '../../features/finance/data/database/daos/categories_dao.dart';
 import '../../features/finance/data/database/tables/account_types_table.dart';
 import '../../features/finance/data/database/tables/accounts_table.dart';
 import '../../features/finance/data/database/tables/budgets_table.dart';
@@ -39,6 +40,7 @@ part 'app_database.g.dart';
     // Finance
     AccountTypesDao,
     AccountsDao,
+    CategoriesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -113,6 +115,138 @@ class AppDatabase extends _$AppDatabase {
       AccountTypesTableCompanion.insert(
         name: 'Krypto',
         icon: 'currency_bitcoin',
+        sortOrder: Value(5),
+        isDefault: Value(true),
+      ),
+    );
+
+    // Standard-Kategorien: Ausgaben
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Wohnen',
+        type: CategoryType.expense,
+        icon: 'home',
+        sortOrder: Value(1),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Lebensmittel',
+        type: CategoryType.expense,
+        icon: 'shopping_cart',
+        sortOrder: Value(2),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Mobilität',
+        type: CategoryType.expense,
+        icon: 'directions_car',
+        sortOrder: Value(3),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Freizeit & Unterhaltung',
+        type: CategoryType.expense,
+        icon: 'movie',
+        sortOrder: Value(4),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Gesundheit',
+        type: CategoryType.expense,
+        icon: 'local_hospital',
+        sortOrder: Value(5),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Versicherungen',
+        type: CategoryType.expense,
+        icon: 'security',
+        sortOrder: Value(6),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Kleidung',
+        type: CategoryType.expense,
+        icon: 'checkroom',
+        sortOrder: Value(7),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Bildung',
+        type: CategoryType.expense,
+        icon: 'school',
+        sortOrder: Value(8),
+        isDefault: Value(true),
+      ),
+    );
+
+    // Standard-Kategorien: Einnahmen
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Gehalt',
+        type: CategoryType.income,
+        icon: 'account_balance_wallet',
+        sortOrder: Value(1),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Bonus',
+        type: CategoryType.income,
+        icon: 'card_giftcard',
+        sortOrder: Value(2),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Investitionen',
+        type: CategoryType.income,
+        icon: 'trending_up',
+        sortOrder: Value(3),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Geschenke',
+        type: CategoryType.income,
+        icon: 'redeem',
+        sortOrder: Value(4),
+        isDefault: Value(true),
+      ),
+    );
+
+    await categoriesDao.createCategory(
+      CategoriesTableCompanion.insert(
+        name: 'Sonstiges',
+        type: CategoryType.income,
+        icon: 'more_horiz',
         sortOrder: Value(5),
         isDefault: Value(true),
       ),

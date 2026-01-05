@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/theme/components.dart';
 import 'accounts_page.dart';
+import 'categories_page.dart';
 
 /// Haushaltsbuch / Finanzen
 class FinancePage extends StatelessWidget {
@@ -43,7 +44,15 @@ class FinancePage extends StatelessWidget {
           InfoCard(
             icon: Icons.category,
             title: l10n.categories,
-            subtitle: l10n.implementedInMilestone('2.3'),
+            subtitle: l10n.manageYourCategories,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CategoriesPage(),
+                ),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right),
           ),
           InfoCard(
             icon: Icons.savings,

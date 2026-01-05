@@ -181,4 +181,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectAccountType => 'Please select an account type';
+
+  @override
+  String get manageYourCategories => 'Manage your categories';
+
+  @override
+  String get createCategory => 'Create Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String deleteCategoryConfirmation(String name) {
+    return 'Are you sure you want to delete the category \'$name\'?';
+  }
+
+  @override
+  String get noCategoriesYet => 'No categories yet';
+
+  @override
+  String get createYourFirstCategory =>
+      'Create your first category to get started';
+
+  @override
+  String get parentCategory => 'Parent Category';
+
+  @override
+  String get noParent => 'No parent (main category)';
+
+  @override
+  String get icon => 'Icon';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get expenses => 'Expenses';
+
+  @override
+  String get income => 'Income';
 }

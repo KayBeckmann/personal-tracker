@@ -181,4 +181,46 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseSelectAccountType => 'Bitte wählen Sie einen Kontotyp aus';
+
+  @override
+  String get manageYourCategories => 'Verwalten Sie Ihre Kategorien';
+
+  @override
+  String get createCategory => 'Kategorie erstellen';
+
+  @override
+  String get editCategory => 'Kategorie bearbeiten';
+
+  @override
+  String get deleteCategory => 'Kategorie löschen';
+
+  @override
+  String deleteCategoryConfirmation(String name) {
+    return 'Möchten Sie die Kategorie \'$name\' wirklich löschen?';
+  }
+
+  @override
+  String get noCategoriesYet => 'Noch keine Kategorien';
+
+  @override
+  String get createYourFirstCategory =>
+      'Erstellen Sie Ihre erste Kategorie, um zu beginnen';
+
+  @override
+  String get parentCategory => 'Übergeordnete Kategorie';
+
+  @override
+  String get noParent => 'Keine (Hauptkategorie)';
+
+  @override
+  String get icon => 'Symbol';
+
+  @override
+  String get color => 'Farbe';
+
+  @override
+  String get expenses => 'Ausgaben';
+
+  @override
+  String get income => 'Einnahmen';
 }

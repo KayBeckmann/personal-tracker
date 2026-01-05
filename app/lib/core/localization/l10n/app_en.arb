@@ -56,5 +56,19 @@
   "pleaseEnterName": "Please enter a name",
   "pleaseEnterAmount": "Please enter an amount",
   "pleaseEnterValidNumber": "Please enter a valid number",
-  "pleaseSelectAccountType": "Please select an account type"
+  "pleaseSelectAccountType": "Please select an account type",
+
+  "manageYourCategories": "Manage your categories",
+  "createCategory": "Create Category",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
+  "deleteCategoryConfirmation": "Are you sure you want to delete the category '{name}'?",
+  "noCategoriesYet": "No categories yet",
+  "createYourFirstCategory": "Create your first category to get started",
+  "parentCategory": "Parent Category",
+  "noParent": "No parent (main category)",
+  "icon": "Icon",
+  "color": "Color",
+  "expenses": "Expenses",
+  "income": "Income"
 }

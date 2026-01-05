@@ -427,6 +427,84 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Bitte wählen Sie einen Kontotyp aus'**
   String get pleaseSelectAccountType;
+
+  /// Untertitel für Kategorien
+  ///
+  /// In de, this message translates to:
+  /// **'Verwalten Sie Ihre Kategorien'**
+  String get manageYourCategories;
+
+  /// Button zum Erstellen einer Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie erstellen'**
+  String get createCategory;
+
+  /// Dialog-Titel zum Bearbeiten einer Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie bearbeiten'**
+  String get editCategory;
+
+  /// Dialog-Titel zum Löschen einer Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie löschen'**
+  String get deleteCategory;
+
+  /// Bestätigungsdialog zum Löschen einer Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Möchten Sie die Kategorie \'{name}\' wirklich löschen?'**
+  String deleteCategoryConfirmation(String name);
+
+  /// Leerer Zustand bei Kategorien
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Kategorien'**
+  String get noCategoriesYet;
+
+  /// Hinweistext für erste Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Erstellen Sie Ihre erste Kategorie, um zu beginnen'**
+  String get createYourFirstCategory;
+
+  /// Label für Eltern-Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Übergeordnete Kategorie'**
+  String get parentCategory;
+
+  /// Option für keine Eltern-Kategorie
+  ///
+  /// In de, this message translates to:
+  /// **'Keine (Hauptkategorie)'**
+  String get noParent;
+
+  /// Label für Icon-Auswahl
+  ///
+  /// In de, this message translates to:
+  /// **'Symbol'**
+  String get icon;
+
+  /// Label für Farb-Auswahl
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe'**
+  String get color;
+
+  /// Ausgaben-Tab
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgaben'**
+  String get expenses;
+
+  /// Einnahmen-Tab
+  ///
+  /// In de, this message translates to:
+  /// **'Einnahmen'**
+  String get income;
 }
 
 class _AppLocalizationsDelegate

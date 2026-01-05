@@ -16,12 +16,18 @@ import '../../features/finance/data/repositories/account_repository_impl.dart'
     as _i460;
 import '../../features/finance/data/repositories/account_type_repository_impl.dart'
     as _i44;
+import '../../features/finance/data/repositories/category_repository_impl.dart'
+    as _i816;
 import '../../features/finance/domain/repositories/account_repository.dart'
     as _i835;
 import '../../features/finance/domain/repositories/account_type_repository.dart'
     as _i436;
+import '../../features/finance/domain/repositories/category_repository.dart'
+    as _i228;
 import '../../features/finance/domain/usecases/create_account.dart' as _i33;
+import '../../features/finance/domain/usecases/create_category.dart' as _i24;
 import '../../features/finance/domain/usecases/delete_account.dart' as _i615;
+import '../../features/finance/domain/usecases/delete_category.dart' as _i878;
 import '../../features/finance/domain/usecases/get_account_balance.dart'
     as _i683;
 import '../../features/finance/domain/usecases/get_accounts_grouped_by_type.dart'
@@ -29,7 +35,15 @@ import '../../features/finance/domain/usecases/get_accounts_grouped_by_type.dart
 import '../../features/finance/domain/usecases/get_all_account_types.dart'
     as _i107;
 import '../../features/finance/domain/usecases/get_all_accounts.dart' as _i1053;
+import '../../features/finance/domain/usecases/get_all_categories.dart'
+    as _i936;
+import '../../features/finance/domain/usecases/get_categories_by_type.dart'
+    as _i277;
+import '../../features/finance/domain/usecases/get_main_categories.dart'
+    as _i1002;
+import '../../features/finance/domain/usecases/get_subcategories.dart' as _i630;
 import '../../features/finance/domain/usecases/update_account.dart' as _i255;
+import '../../features/finance/domain/usecases/update_category.dart' as _i511;
 import '../../features/settings/data/repositories/settings_repository_impl.dart'
     as _i955;
 import '../../features/settings/domain/repositories/settings_repository.dart'
@@ -58,6 +72,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i835.AccountRepository>(
       () => _i460.AccountRepositoryImpl(gh<_i982.AppDatabase>()),
     );
+    gh.lazySingleton<_i228.CategoryRepository>(
+      () => _i816.CategoryRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
     gh.factory<_i33.CreateAccount>(
       () => _i33.CreateAccount(gh<_i835.AccountRepository>()),
     );
@@ -81,6 +98,27 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i16.AppSettingsDao>(
       () => _i16.AppSettingsDao(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i24.CreateCategory>(
+      () => _i24.CreateCategory(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i878.DeleteCategory>(
+      () => _i878.DeleteCategory(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i936.GetAllCategories>(
+      () => _i936.GetAllCategories(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i277.GetCategoriesByType>(
+      () => _i277.GetCategoriesByType(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i1002.GetMainCategories>(
+      () => _i1002.GetMainCategories(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i630.GetSubcategories>(
+      () => _i630.GetSubcategories(gh<_i228.CategoryRepository>()),
+    );
+    gh.lazySingleton<_i511.UpdateCategory>(
+      () => _i511.UpdateCategory(gh<_i228.CategoryRepository>()),
     );
     gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i16.AppSettingsDao>()),

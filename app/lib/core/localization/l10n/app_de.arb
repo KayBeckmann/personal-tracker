@@ -201,5 +201,75 @@
   "pleaseEnterName": "Bitte geben Sie einen Namen ein",
   "pleaseEnterAmount": "Bitte geben Sie einen Betrag ein",
   "pleaseEnterValidNumber": "Bitte geben Sie eine gültige Zahl ein",
-  "pleaseSelectAccountType": "Bitte wählen Sie einen Kontotyp aus"
+  "pleaseSelectAccountType": "Bitte wählen Sie einen Kontotyp aus",
+
+  "manageYourCategories": "Verwalten Sie Ihre Kategorien",
+  "@manageYourCategories": {
+    "description": "Untertitel für Kategorien"
+  },
+
+  "createCategory": "Kategorie erstellen",
+  "@createCategory": {
+    "description": "Button zum Erstellen einer Kategorie"
+  },
+
+  "editCategory": "Kategorie bearbeiten",
+  "@editCategory": {
+    "description": "Dialog-Titel zum Bearbeiten einer Kategorie"
+  },
+
+  "deleteCategory": "Kategorie löschen",
+  "@deleteCategory": {
+    "description": "Dialog-Titel zum Löschen einer Kategorie"
+  },
+
+  "deleteCategoryConfirmation": "Möchten Sie die Kategorie '{name}' wirklich löschen?",
+  "@deleteCategoryConfirmation": {
+    "description": "Bestätigungsdialog zum Löschen einer Kategorie",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+
+  "noCategoriesYet": "Noch keine Kategorien",
+  "@noCategoriesYet": {
+    "description": "Leerer Zustand bei Kategorien"
+  },
+
+  "createYourFirstCategory": "Erstellen Sie Ihre erste Kategorie, um zu beginnen",
+  "@createYourFirstCategory": {
+    "description": "Hinweistext für erste Kategorie"
+  },
+
+  "parentCategory": "Übergeordnete Kategorie",
+  "@parentCategory": {
+    "description": "Label für Eltern-Kategorie"
+  },
+
+  "noParent": "Keine (Hauptkategorie)",
+  "@noParent": {
+    "description": "Option für keine Eltern-Kategorie"
+  },
+
+  "icon": "Symbol",
+  "@icon": {
+    "description": "Label für Icon-Auswahl"
+  },
+
+  "color": "Farbe",
+  "@color": {
+    "description": "Label für Farb-Auswahl"
+  },
+
+  "expenses": "Ausgaben",
+  "@expenses": {
+    "description": "Ausgaben-Tab"
+  },
+
+  "income": "Einnahmen",
+  "@income": {
+    "description": "Einnahmen-Tab"
+  }
 }
