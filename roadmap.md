@@ -115,10 +115,10 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Voraussichtliches Kapital am Monatsende
 
 ### Abschluss Meilenstein 2
-- [ ] Unit-Tests für Haushaltsbuch-Logik
-- [ ] Widget-Tests für Haushaltsbuch-UI
-- [ ] Alle Tests durchlaufen
-- [ ] Git Commit: "feat: Haushaltsbuch mit Konten, Buchungen, Budgets"
+- [x] Unit-Tests für Haushaltsbuch-Logik
+- [x] Widget-Tests für Haushaltsbuch-UI
+- [x] Alle Tests durchlaufen
+- [x] Git Commit: "feat: Haushaltsbuch mit Konten, Buchungen, Budgets"
 
 ---
 
