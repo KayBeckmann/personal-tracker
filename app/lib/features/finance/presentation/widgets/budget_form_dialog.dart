@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
+import '../../../../core/utils/decimal_text_input_formatter.dart';
 import '../../data/database/tables/budgets_table.dart';
 import '../../domain/entities/account.dart';
 import '../../domain/entities/budget.dart';
@@ -176,9 +177,7 @@ class _BudgetFormDialogState extends State<BudgetFormDialog> {
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d+\.?\d{0,2}'),
-                    ),
+                    DecimalTextInputFormatter(decimalDigits: 2),
                   ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {

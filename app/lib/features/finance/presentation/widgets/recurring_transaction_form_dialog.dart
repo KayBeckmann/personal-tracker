@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
+import '../../../../core/utils/decimal_text_input_formatter.dart';
 import '../../data/database/tables/categories_table.dart';
 import '../../data/database/tables/recurring_transactions_table.dart';
 import '../../data/database/tables/transactions_table.dart';
@@ -253,9 +254,7 @@ class _RecurringTransactionFormDialogState
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d+\.?\d{0,2}'),
-                    ),
+                    DecimalTextInputFormatter(decimalDigits: 2),
                   ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {

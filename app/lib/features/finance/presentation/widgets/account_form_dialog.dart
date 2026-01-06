@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
+import '../../../../core/utils/decimal_text_input_formatter.dart';
 import '../../domain/entities/account.dart';
 import '../../domain/entities/account_type.dart';
 import '../../domain/usecases/create_account.dart';
@@ -174,6 +175,9 @@ class _AccountFormDialogState extends State<AccountFormDialog> {
                   suffixText: 'EUR',
                 ),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  DecimalTextInputFormatter(decimalDigits: 2),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l10n.pleaseEnterAmount;

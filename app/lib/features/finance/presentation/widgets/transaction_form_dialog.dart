@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../../core/localization/generated/app_localizations.dart';
+import '../../../../core/utils/decimal_text_input_formatter.dart';
 import '../../data/database/tables/categories_table.dart';
 import '../../data/database/tables/transactions_table.dart';
 import '../../domain/entities/account.dart';
@@ -186,6 +187,9 @@ class _TransactionFormDialogState extends State<TransactionFormDialog> {
                 ),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  DecimalTextInputFormatter(decimalDigits: 2),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l10n.pleaseEnterAmount;

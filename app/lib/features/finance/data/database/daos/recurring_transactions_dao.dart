@@ -118,32 +118,16 @@ class RecurringTransactionsDao extends DatabaseAccessor<AppDatabase>
         nextDate = lastExecuted.add(const Duration(days: 14));
         break;
       case RecurrenceInterval.monthly:
-        nextDate = DateTime(
-          lastExecuted.year,
-          lastExecuted.month + 1,
-          transaction.dayOfMonth,
-        );
+        nextDate = _addMonths(lastExecuted, 1, transaction.dayOfMonth);
         break;
       case RecurrenceInterval.quarterly:
-        nextDate = DateTime(
-          lastExecuted.year,
-          lastExecuted.month + 3,
-          transaction.dayOfMonth,
-        );
+        nextDate = _addMonths(lastExecuted, 3, transaction.dayOfMonth);
         break;
       case RecurrenceInterval.semiannually:
-        nextDate = DateTime(
-          lastExecuted.year,
-          lastExecuted.month + 6,
-          transaction.dayOfMonth,
-        );
+        nextDate = _addMonths(lastExecuted, 6, transaction.dayOfMonth);
         break;
       case RecurrenceInterval.yearly:
-        nextDate = DateTime(
-          lastExecuted.year + 1,
-          lastExecuted.month,
-          transaction.dayOfMonth,
-        );
+        nextDate = _addMonths(lastExecuted, 12, transaction.dayOfMonth);
         break;
     }
 
@@ -153,5 +137,32 @@ class RecurringTransactionsDao extends DatabaseAccessor<AppDatabase>
     }
 
     return nextDate;
+  }
+
+  /// Hilfsmethode zum korrekten Addieren von Monaten
+  ///
+  /// Berücksichtigt unterschiedliche Monatslängen (z.B. 30. Januar + 1 Monat = 28. Februar)
+  DateTime _addMonths(DateTime date, int months, int targetDay) {
+    // Berechne Jahr und Monat nach Addition
+    int year = date.year;
+    int month = date.month + months;
+
+    // Korrigiere Jahr-Überlauf
+    while (month > 12) {
+      month -= 12;
+      year++;
+    }
+    while (month < 1) {
+      month += 12;
+      year--;
+    }
+
+    // Finde den letzten Tag des Zielmonats
+    final lastDayOfMonth = DateTime(year, month + 1, 0).day;
+
+    // Verwende den kleineren Wert zwischen targetDay und lastDayOfMonth
+    final day = targetDay <= lastDayOfMonth ? targetDay : lastDayOfMonth;
+
+    return DateTime(year, month, day);
   }
 }
