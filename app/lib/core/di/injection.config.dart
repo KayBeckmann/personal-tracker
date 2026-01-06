@@ -36,6 +36,8 @@ import '../../features/finance/domain/repositories/recurring_transaction_reposit
     as _i943;
 import '../../features/finance/domain/repositories/transaction_repository.dart'
     as _i761;
+import '../../features/finance/domain/services/recurring_transaction_scheduler.dart'
+    as _i292;
 import '../../features/finance/domain/usecases/create_account.dart' as _i33;
 import '../../features/finance/domain/usecases/create_budget.dart' as _i984;
 import '../../features/finance/domain/usecases/create_category.dart' as _i24;
@@ -72,6 +74,8 @@ import '../../features/finance/domain/usecases/get_planned_transactions.dart'
     as _i402;
 import '../../features/finance/domain/usecases/get_subcategories.dart' as _i630;
 import '../../features/finance/domain/usecases/get_templates.dart' as _i589;
+import '../../features/finance/domain/usecases/process_due_recurring_transactions.dart'
+    as _i455;
 import '../../features/finance/domain/usecases/update_account.dart' as _i255;
 import '../../features/finance/domain/usecases/update_budget.dart' as _i108;
 import '../../features/finance/domain/usecases/update_category.dart' as _i511;
@@ -212,6 +216,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i326.UpdateRecurringTransaction>(
       () => _i326.UpdateRecurringTransaction(
         gh<_i943.RecurringTransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i455.ProcessDueRecurringTransactions>(
+      () => _i455.ProcessDueRecurringTransactions(
+        gh<_i943.RecurringTransactionRepository>(),
+        gh<_i761.TransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i292.RecurringTransactionScheduler>(
+      () => _i292.RecurringTransactionScheduler(
+        gh<_i455.ProcessDueRecurringTransactions>(),
       ),
     );
     gh.lazySingleton<_i674.SettingsRepository>(

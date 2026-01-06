@@ -100,7 +100,7 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Backend: Repository, Entities, Use Cases
 - [x] UI: Dauerauftragsliste
 - [x] UI: Dauerauftrag erstellen/bearbeiten/löschen
-- [ ] Automatische Buchungserstellung (Scheduler)
+- [x] Automatische Buchungserstellung (Scheduler)
 
 ### 2.6 Budgets
 - [x] Budget pro Kategorie/Konto anlegen

@@ -6,17 +6,27 @@ import 'core/di/injection.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/navigation/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/finance/domain/services/recurring_transaction_scheduler.dart';
 import 'features/settings/domain/usecases/get_locale.dart';
 import 'features/settings/domain/usecases/get_theme_mode.dart';
 
-void main() {
+void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Dependency Injection
   configureDependencies();
 
+  // Process due recurring transactions
+  await _initializeSchedulers();
+
   runApp(PersonalTrackerApp());
+}
+
+/// Initialisiert alle Scheduler (z.B. für Daueraufträge)
+Future<void> _initializeSchedulers() async {
+  final recurringScheduler = getIt<RecurringTransactionScheduler>();
+  await recurringScheduler.initialize();
 }
 
 class PersonalTrackerApp extends StatefulWidget {
