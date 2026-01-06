@@ -108,11 +108,11 @@ Komplettes Finanzmodul als erste Kernfunktion.
 - [x] Fortschrittsanzeige
 
 ### 2.7 Finanzübersicht
-- [ ] Kapitalsumme anzeigen
-- [ ] Anstehende Daueraufträge
-- [ ] Geplante Buchungen
-- [ ] Budget-Übersicht
-- [ ] Voraussichtliches Kapital am Monatsende
+- [x] Kapitalsumme anzeigen
+- [x] Anstehende Daueraufträge
+- [x] Geplante Buchungen
+- [x] Budget-Übersicht
+- [x] Voraussichtliches Kapital am Monatsende
 
 ### Abschluss Meilenstein 2
 - [ ] Unit-Tests für Haushaltsbuch-Logik

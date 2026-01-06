@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/localization/generated/app_localizations.dart';
 import '../../../../core/theme/components.dart';
+import '../widgets/budget_overview_card.dart';
+import '../widgets/capital_summary_card.dart';
+import '../widgets/planned_transactions_card.dart';
+import '../widgets/projected_capital_card.dart';
+import '../widgets/upcoming_recurring_card.dart';
 import 'accounts_page.dart';
 import 'budgets_page.dart';
 import 'categories_page.dart';
@@ -21,6 +26,24 @@ class FinancePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Finanzübersicht
+          SectionHeader(
+            title: 'Finanzübersicht',
+            subtitle: 'Ihr finanzieller Status auf einen Blick',
+          ),
+          const SizedBox(height: 16),
+          const CapitalSummaryCard(),
+          const SizedBox(height: 8),
+          const ProjectedCapitalCard(),
+          const SizedBox(height: 8),
+          const UpcomingRecurringCard(),
+          const SizedBox(height: 8),
+          const PlannedTransactionsCard(),
+          const SizedBox(height: 8),
+          const BudgetOverviewCard(),
+          const SizedBox(height: 24),
+
+          // Verwaltung
           SectionHeader(
             title: l10n.householdBook,
             subtitle: l10n.manageYourFinances,

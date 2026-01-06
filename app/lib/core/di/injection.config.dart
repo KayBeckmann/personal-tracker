@@ -72,8 +72,13 @@ import '../../features/finance/domain/usecases/get_main_categories.dart'
     as _i1002;
 import '../../features/finance/domain/usecases/get_planned_transactions.dart'
     as _i402;
+import '../../features/finance/domain/usecases/get_projected_end_of_month_capital.dart'
+    as _i939;
 import '../../features/finance/domain/usecases/get_subcategories.dart' as _i630;
 import '../../features/finance/domain/usecases/get_templates.dart' as _i589;
+import '../../features/finance/domain/usecases/get_total_capital.dart' as _i320;
+import '../../features/finance/domain/usecases/get_upcoming_recurring_transactions.dart'
+    as _i511;
 import '../../features/finance/domain/usecases/process_due_recurring_transactions.dart'
     as _i455;
 import '../../features/finance/domain/usecases/update_account.dart' as _i255;
@@ -117,6 +122,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i228.CategoryRepository>(
       () => _i816.CategoryRepositoryImpl(gh<_i982.AppDatabase>()),
     );
+    gh.lazySingleton<_i320.GetTotalCapital>(
+      () => _i320.GetTotalCapital(gh<_i835.AccountRepository>()),
+    );
     gh.factory<_i33.CreateAccount>(
       () => _i33.CreateAccount(gh<_i835.AccountRepository>()),
     );
@@ -158,6 +166,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i16.AppSettingsDao>(
       () => _i16.AppSettingsDao(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i939.GetProjectedEndOfMonthCapital>(
+      () => _i939.GetProjectedEndOfMonthCapital(
+        gh<_i320.GetTotalCapital>(),
+        gh<_i761.TransactionRepository>(),
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
     );
     gh.lazySingleton<_i24.CreateCategory>(
       () => _i24.CreateCategory(gh<_i228.CategoryRepository>()),
@@ -210,6 +225,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i479.GetAllRecurringTransactions>(
       () => _i479.GetAllRecurringTransactions(
+        gh<_i943.RecurringTransactionRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i511.GetUpcomingRecurringTransactions>(
+      () => _i511.GetUpcomingRecurringTransactions(
         gh<_i943.RecurringTransactionRepository>(),
       ),
     );
