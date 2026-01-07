@@ -35,20 +35,24 @@ class ProjectedCapitalCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            FutureBuilder<double>(
-              future: getProjected(),
-              builder: (context, projectedSnapshot) {
-                if (projectedSnapshot.connectionState ==
-                    ConnectionState.waiting) {
+            StreamBuilder<double>(
+              stream: getTotalCapital.watch(),
+              builder: (context, currentSnapshot) {
+                if (currentSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final projected = projectedSnapshot.data ?? 0.0;
+                final current = currentSnapshot.data ?? 0.0;
 
-                return StreamBuilder<double>(
-                  stream: getTotalCapital.watch(),
-                  builder: (context, currentSnapshot) {
-                    final current = currentSnapshot.data ?? 0.0;
+                return FutureBuilder<double>(
+                  future: getProjected(),
+                  builder: (context, projectedSnapshot) {
+                    if (projectedSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final projected = projectedSnapshot.data ?? 0.0;
                     final difference = projected - current;
                     final isPositive = difference >= 0;
 

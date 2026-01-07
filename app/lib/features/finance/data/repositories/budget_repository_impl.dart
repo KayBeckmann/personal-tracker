@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -30,18 +32,45 @@ class BudgetRepositoryImpl implements BudgetRepository {
 
   @override
   Stream<List<Budget>> watchAllBudgets() {
-    return _db.budgetsDao.watchAllBudgets().asyncMap((budgets) async {
-      final result = <Budget>[];
+    // Kombiniere Streams von Budgets UND Transactions, damit Updates in beiden Tabellen getriggert werden
+    final controller = StreamController<List<Budget>>();
 
-      for (final budgetData in budgets) {
+    StreamSubscription? budgetSub;
+    StreamSubscription? transactionSub;
+
+    List<BudgetData>? latestBudgets;
+
+    Future<void> updateBudgets() async {
+      if (latestBudgets == null) return;
+
+      final result = <Budget>[];
+      for (final budgetData in latestBudgets!) {
         final actualSpending = await _db.budgetsDao.getActualSpending(budgetData);
         result.add(
           BudgetMapper.toEntity(budgetData, actualSpending: actualSpending),
         );
       }
 
-      return result;
+      if (!controller.isClosed) {
+        controller.add(result);
+      }
+    }
+
+    budgetSub = _db.budgetsDao.watchAllBudgets().listen((budgets) {
+      latestBudgets = budgets;
+      updateBudgets();
     });
+
+    transactionSub = _db.transactionsDao.watchAllTransactions().listen((_) {
+      updateBudgets();
+    });
+
+    controller.onCancel = () {
+      budgetSub?.cancel();
+      transactionSub?.cancel();
+    };
+
+    return controller.stream;
   }
 
   @override
