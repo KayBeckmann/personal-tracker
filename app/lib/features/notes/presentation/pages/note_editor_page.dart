@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../domain/entities/note.dart';
 import '../../domain/entities/tag.dart';
+import '../../domain/services/image_storage_service.dart';
+import '../../domain/usecases/get_all_notes.dart';
 import '../../domain/usecases/get_all_tags.dart';
 import '../../domain/usecases/get_note_by_id.dart';
 import '../../domain/usecases/update_note.dart';
+import '../widgets/note_markdown_builder.dart';
 
 /// Seite zum Bearbeiten einer Notiz mit Markdown-Editor und Vorschau
 class NoteEditorPage extends StatefulWidget {
@@ -25,6 +27,8 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
   final _getNoteById = getIt<GetNoteById>();
   final _updateNote = getIt<UpdateNote>();
   final _getAllTags = getIt<GetAllTags>();
+  final _getAllNotes = getIt<GetAllNotes>();
+  final _imageStorage = getIt<ImageStorageService>();
 
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
@@ -32,6 +36,7 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
   bool _isPreviewMode = false;
   bool _isLoading = true;
   bool _hasChanges = false;
+  List<int> _backlinks = [];
 
   @override
   void initState() {
@@ -49,10 +54,14 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
   Future<void> _loadNote() async {
     final note = await _getNoteById(widget.noteId);
     if (note != null && mounted) {
+      // Load backlinks
+      final backlinks = await NoteLinkResolver.findBacklinks(note.id, note.title);
+
       setState(() {
         _note = note;
         _titleController.text = note.title;
         _contentController.text = note.content;
+        _backlinks = backlinks;
         _isLoading = false;
       });
 
@@ -140,6 +149,102 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
     }
   }
 
+  Future<void> _onNoteLinkTap(String noteTitle) async {
+    final noteId = await NoteLinkResolver.findNoteIdByTitle(noteTitle);
+
+    if (noteId != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute<void>(
+          builder: (context) => NoteEditorPage(noteId: noteId),
+        ),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Notiz "$noteTitle" nicht gefunden')),
+      );
+    }
+  }
+
+  Future<void> _showBacklinks() async {
+    if (_backlinks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Keine Backlinks vorhanden')),
+      );
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _BacklinksDialog(
+        backlinks: _backlinks,
+        onNoteTap: (noteId) {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => NoteEditorPage(noteId: noteId),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _showImagePicker() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bild hinzufügen'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Aus Galerie'),
+              onTap: () => Navigator.pop(context, 'gallery'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Kamera'),
+              onTap: () => Navigator.pop(context, 'camera'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == null || !mounted) return;
+
+    String? imagePath;
+    if (result == 'gallery') {
+      imagePath = await _imageStorage.pickImageFromGallery();
+    } else if (result == 'camera') {
+      imagePath = await _imageStorage.pickImageFromCamera();
+    }
+
+    if (imagePath != null && mounted) {
+      // Füge Markdown-Syntax in den Editor ein
+      final markdownImage = '\n![]($imagePath)\n';
+      final currentText = _contentController.text;
+      final cursorPosition = _contentController.selection.baseOffset;
+
+      if (cursorPosition < 0) {
+        // Kein Cursor gesetzt, am Ende einfügen
+        _contentController.text = currentText + markdownImage;
+      } else {
+        // An Cursor-Position einfügen
+        final newText = currentText.substring(0, cursorPosition) +
+            markdownImage +
+            currentText.substring(cursorPosition);
+        _contentController.text = newText;
+        _contentController.selection = TextSelection.fromPosition(
+          TextPosition(offset: cursorPosition + markdownImage.length),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -168,11 +273,26 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
               },
               tooltip: _isPreviewMode ? 'Bearbeiten' : 'Vorschau',
             ),
+            if (!_isPreviewMode)
+              IconButton(
+                icon: const Icon(Icons.image),
+                onPressed: _showImagePicker,
+                tooltip: 'Bild hinzufügen',
+              ),
             IconButton(
               icon: const Icon(Icons.label),
               onPressed: _showTagDialog,
               tooltip: 'Tags verwalten',
             ),
+            if (_backlinks.isNotEmpty)
+              IconButton(
+                icon: Badge(
+                  label: Text('${_backlinks.length}'),
+                  child: const Icon(Icons.link),
+                ),
+                onPressed: _showBacklinks,
+                tooltip: 'Backlinks anzeigen',
+              ),
             if (_hasChanges)
               IconButton(
                 icon: const Icon(Icons.save),
@@ -218,14 +338,14 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
             // Editor or Preview
             Expanded(
               child: _isPreviewMode
-                  ? Markdown(
+                  ? NoteMarkdownViewer(
                       data: _contentController.text,
-                      padding: const EdgeInsets.all(16),
+                      onNoteLinkTap: _onNoteLinkTap,
                     )
                   : TextField(
                       controller: _contentController,
                       decoration: const InputDecoration(
-                        hintText: 'Inhalt (Markdown unterstützt)',
+                        hintText: 'Inhalt (Markdown & Wiki-Links [[Titel]] unterstützt)',
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(16),
                       ),
@@ -307,6 +427,65 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
         ElevatedButton(
           onPressed: () => Navigator.pop(context, _selectedTagIds),
           child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Dialog zur Anzeige von Backlinks
+class _BacklinksDialog extends StatelessWidget {
+  const _BacklinksDialog({
+    required this.backlinks,
+    required this.onNoteTap,
+  });
+
+  final List<int> backlinks;
+  final void Function(int noteId) onNoteTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final getNoteById = getIt<GetNoteById>();
+
+    return AlertDialog(
+      title: const Text('Backlinks'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: backlinks.length,
+          itemBuilder: (context, index) {
+            final noteId = backlinks[index];
+
+            return FutureBuilder<Note?>(
+              future: getNoteById(noteId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const ListTile(
+                    title: Text('Lädt...'),
+                  );
+                }
+
+                final note = snapshot.data!;
+                return ListTile(
+                  leading: const Icon(Icons.link),
+                  title: Text(note.title),
+                  subtitle: Text(
+                    note.content,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () => onNoteTap(noteId),
+                );
+              },
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Schließen'),
         ),
       ],
     );

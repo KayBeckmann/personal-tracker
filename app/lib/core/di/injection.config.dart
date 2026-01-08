@@ -91,6 +91,8 @@ import '../../features/finance/domain/usecases/update_transaction.dart'
 import '../../features/notes/data/repositories/note_repository_impl.dart'
     as _i559;
 import '../../features/notes/domain/repositories/note_repository.dart' as _i539;
+import '../../features/notes/domain/services/image_storage_service.dart'
+    as _i188;
 import '../../features/notes/domain/usecases/create_note.dart' as _i1060;
 import '../../features/notes/domain/usecases/create_tag.dart' as _i476;
 import '../../features/notes/domain/usecases/delete_note.dart' as _i567;
@@ -123,6 +125,9 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.lazySingleton<_i982.AppDatabase>(() => _i982.AppDatabase());
     gh.lazySingleton<_i630.AppRouter>(() => _i630.AppRouter());
+    gh.lazySingleton<_i188.ImageStorageService>(
+      () => _i188.ImageStorageService(),
+    );
     gh.lazySingleton<_i436.AccountTypeRepository>(
       () => _i44.AccountTypeRepositoryImpl(gh<_i982.AppDatabase>()),
     );
