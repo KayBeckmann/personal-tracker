@@ -13,6 +13,10 @@ import '../../features/finance/data/database/tables/budgets_table.dart';
 import '../../features/finance/data/database/tables/categories_table.dart';
 import '../../features/finance/data/database/tables/recurring_transactions_table.dart';
 import '../../features/finance/data/database/tables/transactions_table.dart';
+import '../../features/notes/data/database/daos/notes_dao.dart';
+import '../../features/notes/data/database/tables/note_tags_table.dart';
+import '../../features/notes/data/database/tables/notes_table.dart';
+import '../../features/notes/data/database/tables/tags_table.dart';
 import 'connection/connection.dart';
 import 'daos/app_settings_dao.dart';
 import 'tables/app_settings_table.dart';
@@ -36,6 +40,10 @@ part 'app_database.g.dart';
     TransactionsTable,
     RecurringTransactionsTable,
     BudgetsTable,
+    // Notes
+    NotesTable,
+    TagsTable,
+    NoteTagsTable,
   ],
   daos: [
     // Core
@@ -47,6 +55,8 @@ part 'app_database.g.dart';
     TransactionsDao,
     RecurringTransactionsDao,
     BudgetsDao,
+    // Notes
+    NotesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -56,7 +66,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +84,12 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(recurringTransactionsTable);
             await m.createTable(budgetsTable);
             await _insertDefaultData();
+          }
+          // Migration von Schema 2 zu 3: Notizen-Tabellen hinzufügen
+          if (from < 3) {
+            await m.createTable(notesTable);
+            await m.createTable(tagsTable);
+            await m.createTable(noteTagsTable);
           }
         },
       );

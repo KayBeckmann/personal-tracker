@@ -60,6 +60,9 @@ dependencies:
   # Navigation
   go_router: ^14.6.2
 
+  # Markdown
+  flutter_markdown: ^0.7.4+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

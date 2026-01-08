@@ -88,6 +88,19 @@ import '../../features/finance/domain/usecases/update_recurring_transaction.dart
     as _i326;
 import '../../features/finance/domain/usecases/update_transaction.dart'
     as _i306;
+import '../../features/notes/data/repositories/note_repository_impl.dart'
+    as _i559;
+import '../../features/notes/domain/repositories/note_repository.dart' as _i539;
+import '../../features/notes/domain/usecases/create_note.dart' as _i1060;
+import '../../features/notes/domain/usecases/create_tag.dart' as _i476;
+import '../../features/notes/domain/usecases/delete_note.dart' as _i567;
+import '../../features/notes/domain/usecases/get_all_notes.dart' as _i522;
+import '../../features/notes/domain/usecases/get_all_tags.dart' as _i420;
+import '../../features/notes/domain/usecases/get_note_by_id.dart' as _i471;
+import '../../features/notes/domain/usecases/get_notes_by_tags.dart' as _i563;
+import '../../features/notes/domain/usecases/search_notes.dart' as _i896;
+import '../../features/notes/domain/usecases/toggle_note_archive.dart' as _i294;
+import '../../features/notes/domain/usecases/update_note.dart' as _i397;
 import '../../features/settings/data/repositories/settings_repository_impl.dart'
     as _i955;
 import '../../features/settings/domain/repositories/settings_repository.dart'
@@ -112,6 +125,39 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i630.AppRouter>(() => _i630.AppRouter());
     gh.lazySingleton<_i436.AccountTypeRepository>(
       () => _i44.AccountTypeRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i539.NoteRepository>(
+      () => _i559.NoteRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i1060.CreateNote>(
+      () => _i1060.CreateNote(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i476.CreateTag>(
+      () => _i476.CreateTag(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i567.DeleteNote>(
+      () => _i567.DeleteNote(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i522.GetAllNotes>(
+      () => _i522.GetAllNotes(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i420.GetAllTags>(
+      () => _i420.GetAllTags(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i471.GetNoteById>(
+      () => _i471.GetNoteById(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i563.GetNotesByTags>(
+      () => _i563.GetNotesByTags(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i896.SearchNotes>(
+      () => _i896.SearchNotes(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i294.ToggleNoteArchive>(
+      () => _i294.ToggleNoteArchive(gh<_i539.NoteRepository>()),
+    );
+    gh.lazySingleton<_i397.UpdateNote>(
+      () => _i397.UpdateNote(gh<_i539.NoteRepository>()),
     );
     gh.lazySingleton<_i835.AccountRepository>(
       () => _i460.AccountRepositoryImpl(gh<_i982.AppDatabase>()),
