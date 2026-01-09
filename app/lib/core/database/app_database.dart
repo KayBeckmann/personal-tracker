@@ -17,6 +17,8 @@ import '../../features/notes/data/database/daos/notes_dao.dart';
 import '../../features/notes/data/database/tables/note_tags_table.dart';
 import '../../features/notes/data/database/tables/notes_table.dart';
 import '../../features/notes/data/database/tables/tags_table.dart';
+import '../../features/tasks/data/database/daos/tasks_dao.dart';
+import '../../features/tasks/data/database/tables/tasks_table.dart';
 import 'connection/connection.dart';
 import 'daos/app_settings_dao.dart';
 import 'tables/app_settings_table.dart';
@@ -44,6 +46,8 @@ part 'app_database.g.dart';
     NotesTable,
     TagsTable,
     NoteTagsTable,
+    // Tasks
+    TasksTable,
   ],
   daos: [
     // Core
@@ -57,6 +61,8 @@ part 'app_database.g.dart';
     BudgetsDao,
     // Notes
     NotesDao,
+    // Tasks
+    TasksDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -66,7 +72,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -90,6 +96,10 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(notesTable);
             await m.createTable(tagsTable);
             await m.createTable(noteTagsTable);
+          }
+          // Migration von Schema 3 zu 4: Aufgaben-Tabelle hinzufügen
+          if (from < 4) {
+            await m.createTable(tasksTable);
           }
         },
       );

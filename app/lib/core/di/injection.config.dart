@@ -111,6 +111,16 @@ import '../../features/settings/domain/usecases/get_locale.dart' as _i514;
 import '../../features/settings/domain/usecases/get_theme_mode.dart' as _i867;
 import '../../features/settings/domain/usecases/set_locale.dart' as _i729;
 import '../../features/settings/domain/usecases/set_theme_mode.dart' as _i743;
+import '../../features/tasks/data/repositories/task_repository_impl.dart'
+    as _i20;
+import '../../features/tasks/domain/repositories/task_repository.dart' as _i148;
+import '../../features/tasks/domain/usecases/create_task.dart' as _i602;
+import '../../features/tasks/domain/usecases/delete_task.dart' as _i840;
+import '../../features/tasks/domain/usecases/get_all_tasks.dart' as _i953;
+import '../../features/tasks/domain/usecases/get_overdue_tasks.dart' as _i544;
+import '../../features/tasks/domain/usecases/get_today_tasks.dart' as _i605;
+import '../../features/tasks/domain/usecases/update_task.dart' as _i739;
+import '../../features/tasks/domain/usecases/update_task_status.dart' as _i301;
 import '../database/app_database.dart' as _i982;
 import '../database/daos/app_settings_dao.dart' as _i16;
 import '../navigation/app_router.dart' as _i630;
@@ -196,6 +206,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i348.BudgetRepository>(
       () => _i182.BudgetRepositoryImpl(gh<_i982.AppDatabase>()),
+    );
+    gh.lazySingleton<_i148.TaskRepository>(
+      () => _i20.TaskRepositoryImpl(gh<_i982.AppDatabase>()),
     );
     gh.lazySingleton<_i761.TransactionRepository>(
       () => _i1045.TransactionRepositoryImpl(gh<_i982.AppDatabase>()),
@@ -299,6 +312,27 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i292.RecurringTransactionScheduler(
         gh<_i455.ProcessDueRecurringTransactions>(),
       ),
+    );
+    gh.lazySingleton<_i602.CreateTask>(
+      () => _i602.CreateTask(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i840.DeleteTask>(
+      () => _i840.DeleteTask(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i953.GetAllTasks>(
+      () => _i953.GetAllTasks(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i544.GetOverdueTasks>(
+      () => _i544.GetOverdueTasks(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i605.GetTodayTasks>(
+      () => _i605.GetTodayTasks(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i739.UpdateTask>(
+      () => _i739.UpdateTask(gh<_i148.TaskRepository>()),
+    );
+    gh.lazySingleton<_i301.UpdateTaskStatus>(
+      () => _i301.UpdateTaskStatus(gh<_i148.TaskRepository>()),
     );
     gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i16.AppSettingsDao>()),
