@@ -126,27 +126,27 @@ Komplettes Finanzmodul als erste Kernfunktion.
 Produktivitäts-Module als Basis für Verlinkungen.
 
 ### 3.1 Notizen
-- [ ] Datenmodell (Notiz, Tags)
-- [ ] Notizliste mit Filter (Freitext, Tags)
-- [ ] Markdown-Editor
-- [ ] Markdown-Vorschau
-- [ ] Verlinkungen zwischen Notizen
-- [ ] Bilder einbetten
-- [ ] Archiv-Funktion
+- [x] Datenmodell (Notiz, Tags)
+- [x] Notizliste mit Filter (Freitext, Tags)
+- [x] Markdown-Editor
+- [x] Markdown-Vorschau
+- [x] Verlinkungen zwischen Notizen
+- [x] Bilder einbetten
+- [x] Archiv-Funktion
 
 ### 3.2 Aufgaben
-- [ ] Datenmodell (Aufgabe, Status, Priorität)
-- [ ] Aufgabenliste mit Sortierung/Filter
-- [ ] Aufgabe erstellen/bearbeiten
-- [ ] Status-Wechsel (offen, in Bearbeitung, erledigt)
-- [ ] Fälligkeitsdatum & Erinnerungen
-- [ ] Verknüpfung zu Notizen
+- [x] Datenmodell (Aufgabe, Status, Priorität)
+- [x] Aufgabenliste mit Sortierung/Filter
+- [x] Aufgabe erstellen/bearbeiten
+- [x] Status-Wechsel (offen, in Bearbeitung, erledigt)
+- [x] Fälligkeitsdatum & Erinnerungen
+- [x] Verknüpfung zu Notizen
 
 ### Abschluss Meilenstein 3
-- [ ] Unit-Tests für Notizen & Aufgaben
-- [ ] Widget-Tests für Notizen & Aufgaben
-- [ ] Alle Tests durchlaufen
-- [ ] Git Commit: "feat: Notizen mit Markdown und Aufgaben-Management"
+- [x] Unit-Tests für Notizen & Aufgaben
+- [x] Widget-Tests für Notizen & Aufgaben
+- [x] Alle Tests durchlaufen
+- [x] Git Commit: "feat: Notizen mit Markdown und Aufgaben-Management"
 
 ---
 
